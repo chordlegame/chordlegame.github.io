@@ -2,6 +2,7 @@ h1 {
     text-align: center;
     font-size: 30px;
     border-bottom: 1px solid #3a3a3c;
+    background-color: #00000000;
 }
 
 body {
@@ -10,4 +11,96 @@ body {
     font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
     max-width: 500px;
     margin: auto;
+    padding: 0;
+    height: 100%;
+}
+
+button {
+    padding: none;
+    outline: none;
+    border-width: 0;
+}
+
+html {
+    height: 100%;
+}
+
+.game-board{
+    height: 100%;
+}
+
+.second-row {
+    margin: 0.5rem 0;
+}
+  
+.keyboard-button {
+    font-size: 1.8rem;
+    font-weight: 700;
+    padding: 0.5rem;
+    margin: 0 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-transform: uppercase;
+    background-color: #818384;
+}
+
+#game-keyboard {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  
+#game-keyboard div {
+    display: flex;
+}
+
+.key {
+    float: left;
+    position: relative;
+    width: 69px;
+    height: 240px;
+    margin: 0 2px 2px 0;
+    background: #fff;
+    border-radius: 0 0 4px 4px;
+}
+.key.pressed,
+.key:active {
+    background: #f4f3f3;
+    box-shadow: inset 3px 2px 3px #999, inset -3px 2px 3px #999;
+}
+.key.black {
+    width: 0;
+    margin: 0;
+    z-index: 2;
+}
+.key.black:after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -25px;
+    display: block;
+    width: 50px;
+    height: 140px;
+    background: #000;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 1px 1px 0 #555, 2px 2px 0 #555;
+}
+
+.key.black.pressed:after,
+.key.black:active:after {
+    background-color: #222;
+}
+
+.piano-button {
+    margin: 1rem 0;
+    display:inline;
+    font-size: 2.5rem;
+    width: 45px;
+    line-height: 60px;
+    border-radius: 4px;
+}
+
+.piano-button:active{
+    background-color: #999;
 }
