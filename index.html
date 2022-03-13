@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    
     <div id="header">
         <h1>      
             <!-- <button id="help-button" class="icon" aria-label="help" style="text-align: left;">
@@ -21,7 +22,27 @@
         </h1>
     </div>
     <div id="game-board">
+        <div id="sheet1"></div>
+        <script>
+            var VF = Vex.Flow;
 
+            var div = document.getElementById("sheet1");
+            var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
+
+            // Size our SVG:
+            renderer.resize(500, 500);
+
+            // And get a drawing context:
+            var context = renderer.getContext();
+            // Create a stave at position 10, 40 of width 400 on the canvas.
+            var stave = new VF.Stave(10, 40, 400);
+
+            // Add a clef and time signature.
+            stave.addClef("treble").addTimeSignature("4/4");
+
+            // Connect it to the rendering context and draw!
+            stave.setContext(context).draw();
+        </script>
     </div>
     
     <div id="piano-keyboard" style="bottom:0;position: absolute;">
@@ -55,5 +76,7 @@
             <div class="key" data-key="11"></div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vexflow/3.0.9/vexflow-min.js"></script>
+    <script src="jquery-3.5.1.min.js"></script>
 </body>
 </html>
