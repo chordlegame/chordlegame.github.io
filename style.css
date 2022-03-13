@@ -1,0 +1,13 @@
+h1 {
+    text-align: center;
+    font-size: 30px;
+    border-bottom: 1px solid #3a3a3c;
+}
+
+body {
+    background-color: #121213;
+    color: #fff;
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+    max-width: 500px;
+    margin: auto;
+}
