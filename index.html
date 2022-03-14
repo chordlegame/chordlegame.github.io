@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <script src="https://unpkg.com/vexflow@3.0.9/releases/vexflow-min.js"></script>
+    <script src="jquery-3.6.0.min.js"></script>
     
     <div id="header">
         <h1>      
@@ -22,39 +24,36 @@
         </h1>
     </div>
     <div id="game-board">
-        <div id="sheet1"></div>
+        <div id="sheet0" class="staff"></div>
+        <div id="sheet1" class="staff"></div>
+        <div id="sheet2" class="staff"></div>
+        <div id="sheet3" class="staff"></div>
+        <div id="sheet4" class="staff"></div>
+        <div id="sheet5" class="staff"></div>
+
+        <p id="lengthDisplay">p</p>
         <script>
-            var VF = Vex.Flow;
-
-            var div = document.getElementById("sheet1");
-            var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
-
-            // Size our SVG:
-            renderer.resize(500, 500);
-
-            // And get a drawing context:
-            var context = renderer.getContext();
-            // Create a stave at position 10, 40 of width 400 on the canvas.
-            var stave = new VF.Stave(10, 40, 400);
-
-            // Add a clef and time signature.
-            stave.addClef("treble").addTimeSignature("4/4");
-
-            // Connect it to the rendering context and draw!
-            stave.setContext(context).draw();
+            var exports = {};
+            function require(a){return null;}
+        </script>
+        <script src="sequence.js"></script>
+        <script src="renderer.js"></script>
+        <script src="game.js"></script>
+        <script>
+            let game = new Game(new sequence(2, 4).pushNote(60, 3).pushNote(60, 3).pushNote(60, 2).pushNote(60, 2).pushNote(60, 1).pushNote(60, 1));
         </script>
     </div>
     
     <div id="piano-keyboard" style="bottom:0;position: absolute;">
         <div class="piano-buttons" style="display: flex; justify-content: space-between;">
             <div style="left:0;">
-                <button class="piano-button">𝅝</button>
-                <button class="piano-button">𝅗𝅥</button>
-                <button class="piano-button">𝅘𝅥</button>
-                <button class="piano-button">𝅘𝅥𝅮</button>
-                <button class="piano-button">𝅘𝅥𝅰</button>
-                <button class="piano-button">3</button>
-                <button class="piano-button">^</button>
+                <button class="piano-button" onclick="game.changeLength(8)">𝅝</button>
+                <button class="piano-button" onclick="game.changeLength(4)">𝅗𝅥</button>
+                <button class="piano-button" onclick="game.changeLength(2)">𝅘𝅥</button>
+                <button class="piano-button" onclick="game.changeLength(1)">𝅘𝅥𝅮</button>
+                <button class="piano-button" onclick="game.changeLength(0)">𝅘𝅥𝅰</button>
+                <button class="piano-button" onclick="">3</button>
+                <button class="piano-button" onclick="">^</button>
             </div>
             <div style="right:0;">
                 <button class="piano-button">▶</button>
@@ -62,21 +61,19 @@
             </div>
         </div>
         <div class="keys">
-            <div class="key" data-key="0"></div>
-            <div class="key black" data-key="1"></div>
-            <div class="key" data-key="2"></div>
-            <div class="key black" data-key="3"></div>
-            <div class="key" data-key="4"></div>
-            <div class="key" data-key="5"></div>
-            <div class="key black" data-key="6"></div>
-            <div class="key" data-key="7"></div>
-            <div class="key black" data-key="8"></div>
-            <div class="key" data-key="9"></div>
-            <div class="key black" data-key="10"></div>
-            <div class="key" data-key="11"></div>
+            <div class="key"        onclick="game.pushNote( 0)"></div>
+            <div class="key black"  onclick="game.pushNote( 1)"></div>
+            <div class="key"        onclick="game.pushNote( 2)"></div>
+            <div class="key black"  onclick="game.pushNote( 3)"></div>
+            <div class="key"        onclick="game.pushNote( 4)"></div>
+            <div class="key"        onclick="game.pushNote( 5)"></div>
+            <div class="key black"  onclick="game.pushNote( 6)"></div>
+            <div class="key"        onclick="game.pushNote( 7)"></div>
+            <div class="key black"  onclick="game.pushNote( 8)"></div>
+            <div class="key"        onclick="game.pushNote( 9)"></div>
+            <div class="key black"  onclick="game.pushNote(10)"></div>
+            <div class="key"        onclick="game.pushNote(11)"></div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vexflow/3.0.9/vexflow-min.js"></script>
-    <script src="jquery-3.5.1.min.js"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 h1 {
     text-align: center;
-    font-size: 30px;
+    font-size: 40px;
     border-bottom: 1px solid #3a3a3c;
     background-color: #00000000;
 }
@@ -23,6 +23,13 @@ button {
 
 html {
     height: 100%;
+}
+
+p {
+    font-size: 50px;
+    padding: 0;
+    margin: 0;
+    position: absolute;
 }
 
 .game-board{
@@ -96,11 +103,12 @@ html {
     margin: 1rem 0;
     display:inline;
     font-size: 2.5rem;
-    width: 45px;
+    width: 38px;
     line-height: 60px;
     border-radius: 4px;
+    background-color: #fff;
 }
 
-.piano-button:active{
+.piano-button:active {
     background-color: #999;
 }
