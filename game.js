@@ -10,6 +10,7 @@ class gameSequence {
      */
     constructor(seq){
         this.sequence = new sequence(seq.measures, seq.beatsPerMeasure);
+        this.sequence.notes = [];
         this.matches = [];
     }
 }
@@ -44,11 +45,9 @@ class Game {
     constructor(base){
         this.currentattempt = -1;
         this.inputLength = 0;
+        this.currentLength = 0;
 
         this.baselineSequence = base;
-
-        this.lengthElement = document.getElementById("lengthDisplay");
-        this.lengthElement.textContent = lengthChars[this.inputLength];
 
         this.octave = false;
 
@@ -61,6 +60,13 @@ class Game {
             new gameSequence(base)
         ];
 
+        drawSVG("sheet0", 2, 4, this.rows[0]);
+        drawSVG("sheet1", 2, 4, this.rows[0]);
+        drawSVG("sheet2", 2, 4, this.rows[0]);
+        drawSVG("sheet3", 2, 4, this.rows[0]);
+        drawSVG("sheet4", 2, 4, this.rows[0]);
+        drawSVG("sheet5", 2, 4, this.rows[0]);
+
         this.advanceSequence();
     }
 
@@ -69,7 +75,7 @@ class Game {
             let [matches, win] = this.rows[0].sequence.compare(this.baselineSequence);
             this.rows[this.currentattempt].matches = matches;
 
-            //renderer.render whatever idc with htmelement
+            drawSVGWithColor("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence, this.baselineSequence);
 
             if(win){
                 this.Win();
@@ -86,7 +92,9 @@ class Game {
         
         this.activeSequence = this.rows[this.currentattempt].sequence;
 
-        //renderer.render whatever again
+        this.currentLength = 0;
+
+        drawSVG("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence);
     }
 
     Win(){
@@ -98,13 +106,28 @@ class Game {
     }
 
     changeLength(newlength){
+        document.getElementById("pbl" + this.inputLength.toString()).classList.remove('piano-button-pressed')
+
         this.inputLength = newlength;
-        this.lengthElement.textContent = lengthChars[newlength];
+
+        document.getElementById("pbl" + this.inputLength.toString()).classList.add('piano-button-pressed');
+    }
+
+    toggleOctave(){
+        this.octave = !this.octave;
+        if(this.octave) document.getElementById("pbup").classList.add('piano-button-pressed')
+        else document.getElementById("pbup").classList.remove('piano-button-pressed')
     }
 
     pushNote(note){
-        this.activeSequence.pushNote(note + (this.octave ? 4*12 : 5*12), this.inputLength);
+        if((this.inputLength + this.currentLength) > (this.activeSequence.measures * this.activeSequence.beatsPerMeasure * 2)) {
+            return;
+        }
 
-        window.alert("hi");
+        this.activeSequence.pushNote(note + (this.octave ? 5*12 : 4*12), this.inputLength);
+
+        this.currentLength += this.inputLength;
+
+        drawSVG("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence);
     }
 }

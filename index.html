@@ -30,30 +30,18 @@
         <div id="sheet3" class="staff"></div>
         <div id="sheet4" class="staff"></div>
         <div id="sheet5" class="staff"></div>
-
-        <p id="lengthDisplay">p</p>
-        <script>
-            var exports = {};
-            function require(a){return null;}
-        </script>
-        <script src="sequence.js"></script>
-        <script src="renderer.js"></script>
-        <script src="game.js"></script>
-        <script>
-            let game = new Game(new sequence(2, 4).pushNote(60, 3).pushNote(60, 3).pushNote(60, 2).pushNote(60, 2).pushNote(60, 1).pushNote(60, 1));
-        </script>
     </div>
     
     <div id="piano-keyboard" style="bottom:0;position: absolute;">
         <div class="piano-buttons" style="display: flex; justify-content: space-between;">
             <div style="left:0;">
-                <button class="piano-button" onclick="game.changeLength(8)">𝅝</button>
-                <button class="piano-button" onclick="game.changeLength(4)">𝅗𝅥</button>
-                <button class="piano-button" onclick="game.changeLength(2)">𝅘𝅥</button>
-                <button class="piano-button" onclick="game.changeLength(1)">𝅘𝅥𝅮</button>
-                <button class="piano-button" onclick="game.changeLength(0)">𝅘𝅥𝅰</button>
-                <button class="piano-button" onclick="">3</button>
-                <button class="piano-button" onclick="">^</button>
+                <button class="piano-button" id="pbl8" onclick="game.changeLength(8)">𝅝</button>
+                <button class="piano-button" id="pbl4" onclick="game.changeLength(4)">𝅗𝅥</button>
+                <button class="piano-button" id="pbl2" onclick="game.changeLength(2)">𝅘𝅥</button>
+                <button class="piano-button" id="pbl1" onclick="game.changeLength(1)">𝅘𝅥𝅮</button>
+                <button class="piano-button" id="pbl0" onclick="game.changeLength(0)">𝅘𝅥𝅰</button>
+                <button class="piano-button" id="pbtr" onclick="">3</button>
+                <button class="piano-button" id="pbup" onclick="game.toggleOctave()">^</button>
             </div>
             <div style="right:0;">
                 <button class="piano-button">▶</button>
@@ -75,5 +63,22 @@
             <div class="key"        onclick="game.pushNote(11)"></div>
         </div>
     </div>
+    <script>
+        var exports = {};
+        function require(a){return null;}
+    </script>
+    <script src="sequence.js"></script>
+    <script src="renderer.js"></script>
+    <script src="game.js"></script>
+    <script>
+        let game = new Game(new sequence(2, 4).pushNote(60, 3).pushNote(60, 3).pushNote(60, 2).pushNote(60, 2).pushNote(60, 1).pushNote(60, 1).pushRest(2).pushNote(60, 2));
+        game.changeLength(2)
+
+        window.onkeypress = function(event) {
+            if (event.keyCode == 13) {
+                game.advanceSequence();
+            }
+        }
+    </script>
 </body>
 </html>

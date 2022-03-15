@@ -1,20 +1,4 @@
 //@ts-check
-
-let test_sequence = new sequence(2, 4);
-test_sequence.pushNote(60, 3);
-test_sequence.pushNote(62, 1);
-test_sequence.pushNote(64, 2);
-test_sequence.pushNote(65, 2);
-test_sequence.pushNote(67, 2);
-
-
-drawSVG("sheet0", 0, 0, test_sequence);
-drawSVG("sheet1", 2, 4);
-drawSVG("sheet2", 2, 4);
-drawSVG("sheet3", 2, 4);
-drawSVG("sheet4", 2, 4);
-drawSVG("sheet5", 2, 4);
-
 /**
  * 
  * @param {string} element 
@@ -27,12 +11,13 @@ function drawSVG(element, measurenum, beatsnum, seq = null){
     var beatspM = beatsnum;
 
     var div = document.getElementById(element)
+    if(div.childElementCount > 0)
+        div.removeChild(div.firstChild);
     var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
 
     // Size our SVG:
-    renderer.resize(500, 80);
-
-    var stave = new VF.Stave(25, 0, 450, {fill_style : 'white'});
+    renderer.resize(500, 85);
+    var stave = new VF.Stave(25, -15, 450, {fill_style : 'white'});
 
     var context = renderer.getContext();
 
@@ -47,6 +32,7 @@ function drawSVG(element, measurenum, beatsnum, seq = null){
     var eigthPointer = 0;
 
     if(seq != null){
+        if(!seq.notes) return;
         measureNum = seq.measures;
         beatsNum = seq.beatsPerMeasure * measureNum;
         beatspM = seq.beatsPerMeasure;
@@ -87,11 +73,104 @@ function drawSVG(element, measurenum, beatsnum, seq = null){
         eigthPointer += maxlength;
     }
 
-    // Create a voice in 4/4 and add the notes from above
-    var voice = new VF.Voice({num_beats: beatsNum,  beat_value: beatspM});
-    voice.addTickables(notes);
+    var beams = VF.Beam.generateBeams(notes);
 
-    var formatter = new VF.Formatter().joinVoices([voice]).format([voice], 450);
+    VF.Formatter.FormatAndDraw(context, stave, notes);
 
-    voice.draw(context, stave);
+    beams.forEach(function(beam) {
+        beam.setContext(context).draw();
+    });
+}
+
+function drawSVGWithColor(element, measurenum, beatsnum, seq, base){
+    var measureNum = measurenum;
+    var beatsNum = measureNum * beatsnum;
+    var beatspM = beatsnum;
+
+    var div = document.getElementById(element)
+    if(div.childElementCount > 0)
+        div.removeChild(div.firstChild);
+    var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
+
+    // Size our SVG:
+    renderer.resize(500, 85);
+    var stave = new VF.Stave(25, -15, 450, {fill_style : 'white'});
+
+    var context = renderer.getContext();
+
+    stave.setContext(context).draw();
+
+    context.setFillStyle('white');
+    context.setStrokeStyle('white');
+
+    var notes = [];
+    var tuples = [];
+
+    var eigthPointer = 0;
+
+    if(seq != null){
+        if(!seq.notes) return;
+        measureNum = seq.measures;
+        beatsNum = seq.beatsPerMeasure * measureNum;
+        beatspM = seq.beatsPerMeasure;
+        for(var elem of seq.notes){
+            // @ts-ignore
+            if(elem instanceof Note){
+                // @ts-ignore
+                notes.push(elem.toVFNote());
+            }
+            // @ts-ignore
+            else if (elem instanceof Triplet){
+                // @ts-ignore
+                let [tuple, tnotes] = elem.toVFNotes();
+                notes.push(tnotes);
+                tuples.push(tuple);
+            }
+            // @ts-ignore
+            else if (elem instanceof Rest){
+                // @ts-ignore
+                notes.push(elem.toVFRest());
+            }
+            eigthPointer += elem.duration;
+
+            if(eigthPointer % 8 == 0){
+                notes.push(new VF.BarNote());
+            }
+        }
+    }
+
+    while(eigthPointer < (beatsNum * 2)){
+        if(eigthPointer % 8 == 0 && eigthPointer != 0){
+            notes.push(new VF.BarNote());
+        }
+        let maxlength = (beatsNum * 2 - eigthPointer);
+        if(maxlength > 4) maxlength = 4;
+        let duration = durationStrings[maxlength];
+        notes.push(new VF.GhostNote({duration: duration}));
+        eigthPointer += maxlength;
+    }
+
+    let colors = seq.compare(base);
+
+    let indexOfColor = 0;
+    notes.forEach(function(note){
+        let colnumber = colors[indexOfColor];
+        let col = '#818384';
+        
+        switch (colnumber){
+            case 1: col = '#c9b458'; break;
+            case 2: col = '#6aaa64'; break;
+        }
+
+        note.setStyle({fillStyle: col, strokeStyle: col});
+        indexOfColor++;
+    });
+
+    var beams = VF.Beam.generateBeams(notes);
+
+    VF.Formatter.FormatAndDraw(context, stave, notes);
+
+    beams.forEach(function(beam) {
+        beam.setContext(context).draw();
+    });
 }

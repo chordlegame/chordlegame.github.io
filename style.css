@@ -10,6 +10,7 @@ body {
     color: #fff;
     font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
     max-width: 500px;
+    min-width: 300px;
     margin: auto;
     padding: 0;
     height: 100%;
@@ -30,6 +31,10 @@ p {
     padding: 0;
     margin: 0;
     position: absolute;
+}
+
+.staff {
+    max-width: max-content;
 }
 
 .game-board{
@@ -110,5 +115,9 @@ p {
 }
 
 .piano-button:active {
+    background-color: #999;
+}
+
+.piano-button-pressed {
     background-color: #999;
 }
