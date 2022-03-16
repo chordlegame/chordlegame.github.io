@@ -101,7 +101,7 @@ class Chord{
     }
 }
 
-async function sequenceFromFile(filepath : string, index : number = 0) : sequence {
+function sequenceFromFile(filepath : string, index : number = 0) : sequence {
     let inputstrings = fetch('https://chordlegame.github.io/').toString().split(";");
     return sequenceFromString(inputstrings[index]);
 }
