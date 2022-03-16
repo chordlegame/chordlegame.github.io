@@ -103,7 +103,7 @@ class Game {
     }
 
     Lose(){
-        console.log("WIN!!!!");
+        console.log("LOSE :(");
     }
 
     changeLength(newlength){
