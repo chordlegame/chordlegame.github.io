@@ -52,6 +52,19 @@ export class sequence{
         return this;
     }
 
+    deleteLast(){
+        return this.notes.pop().duration;
+    }
+
+    /*
+    colors:
+    0: grey
+    1: green
+    2: light yellow
+    3: dark yellow
+
+
+    */
     //returns an array of integers analagous to the object being enacted upon, win
     compare(comparor : sequence) : [number[], boolean] {
         let arr : number[] = [];
@@ -59,32 +72,50 @@ export class sequence{
         let win  : boolean = true;
 
         for(var note of this.notes){
-            let [element, beat] = this.getElementAt8thNoteBeat(eigthPointer);
-            if(typeof element != typeof note) {
+            let [element, beat] = comparor.getElementAt8thNoteBeat(eigthPointer);
+            console.log(beat + ", " + eigthPointer);
+            if(beat == eigthPointer){
+                if(typeof element != typeof note) {
+                    console.log("different element at beat" + beat);
+                    if(note instanceof Triplet) arr.push(0, 0, 0);
+                    else arr.push(0);
+                    win = false;
+                }
+                else if(element instanceof Note){
+                    
+                        let extranotes = false;
+                        for(let i = beat + 1; i < beat + note.duration; i++){
+                            let [h, j] = comparor.getElementAt8thNoteBeat(i);
+                            if(h != element){
+                                extranotes = true;
+                            }
+                        }
+
+                        if(extranotes){
+                            arr.push(3);
+                            win = false;
+                        }
+                        else if(element.note == (note as Note).note) 
+                            arr.push(1);
+                        else {
+                            arr.push(2);
+                            win = false;
+                        
+                    }
+                }
+                else if (element instanceof Rest){
+                    arr.push(0);
+                }
+                else if (element instanceof Triplet){
+                    if(element.duration != note.duration){
+                        arr.push(0,0,0);
+                    }
+                }
+            }
+            else{
                 if(note instanceof Triplet) arr.push(0, 0, 0);
                 else arr.push(0);
                 win = false;
-            }
-            else if(element instanceof Note){
-                if(beat == eigthPointer){
-                    if(element.note == (note as Note).note) arr.push(2);
-                    else {
-                        arr.push(1);
-                        win = false;
-                    }
-                }
-                else{
-                    arr.push(0);
-                    win = false;
-                }
-            }
-            else if (element instanceof Rest){
-                arr.push(0);
-            }
-            else if (element instanceof Triplet){
-                if(element.duration != note.duration){
-                    arr.push(0,0,0);
-                }
             }
 
             eigthPointer += note.duration;
@@ -95,15 +126,19 @@ export class sequence{
 
     getElementAt8thNoteBeat(beat : number) : [StaffElement, number] {
         let eigthPointer = 0;
+        let beatofnote = 0;
 
-        for(var note of this.notes){
+        for(var note of this.notes) {
             eigthPointer += note.duration;
-            if(eigthPointer >= beat){
-                return [note, eigthPointer];
+
+            if(eigthPointer > beat){
+                return [note, beatofnote];
             }
+
+            beatofnote = eigthPointer;
         }
 
-        return null;
+        return [null, eigthPointer];
     }
 }
 

@@ -46,6 +46,7 @@ class Game {
         this.currentattempt = -1;
         this.inputLength = 0;
         this.currentLength = 0;
+        this.dotted = false;
 
         this.baselineSequence = base;
 
@@ -72,10 +73,10 @@ class Game {
 
     advanceSequence() {
         if(this.currentattempt >= 0){
-            let [matches, win] = this.rows[0].sequence.compare(this.baselineSequence);
+            let [matches, win] = this.rows[this.currentattempt].sequence.compare(this.baselineSequence);
             this.rows[this.currentattempt].matches = matches;
 
-            drawSVGWithColor("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence, this.baselineSequence);
+            drawSVGWithColor("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence, matches);
 
             if(win){
                 this.Win();
@@ -98,11 +99,11 @@ class Game {
     }
 
     Win(){
-        //overlay win element somehow
+        console.log("WIN!!!!");
     }
 
     Lose(){
-        //overlay lose element somehow
+        console.log("WIN!!!!");
     }
 
     changeLength(newlength){
@@ -119,14 +120,42 @@ class Game {
         else document.getElementById("pbup").classList.remove('piano-button-pressed')
     }
 
+    toggleDot(){
+        this.dotted = !this.dotted
+        if(this.dotted) document.getElementById("pbdot").classList.add('piano-button-pressed')
+        else document.getElementById("pbdot").classList.remove('piano-button-pressed')
+    }
+
     pushNote(note){
-        if((this.inputLength + this.currentLength) > (this.activeSequence.measures * this.activeSequence.beatsPerMeasure * 2)) {
+        let duration = this.inputLength + (this.dotted ? this.inputLength/2 : 0);
+
+        if((duration + this.currentLength) > (this.activeSequence.measures * this.activeSequence.beatsPerMeasure * 2)) {
             return;
         }
 
-        this.activeSequence.pushNote(note + (this.octave ? 5*12 : 4*12), this.inputLength);
+        this.activeSequence.pushNote(note + (this.octave ? 5*12 : 4*12), duration);
 
-        this.currentLength += this.inputLength;
+        this.currentLength += duration;
+
+        drawSVG("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence);
+    }
+
+    pushRest(){
+        let duration = this.inputLength + (this.dotted ? this.inputLength/2 : 0);
+
+        if((duration + this.currentLength) > (this.activeSequence.measures * this.activeSequence.beatsPerMeasure * 2)) {
+            return;
+        }
+
+        this.activeSequence.pushRest(duration);
+
+        this.currentLength += duration;
+
+        drawSVG("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence);
+    }
+
+    deleteNote(){
+        this.currentLength -= this.activeSequence.deleteLast();
 
         drawSVG("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence);
     }

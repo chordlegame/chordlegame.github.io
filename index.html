@@ -40,8 +40,9 @@
                 <button class="piano-button" id="pbl2" onclick="game.changeLength(2)">𝅘𝅥</button>
                 <button class="piano-button" id="pbl1" onclick="game.changeLength(1)">𝅘𝅥𝅮</button>
                 <button class="piano-button" id="pbl0" onclick="game.changeLength(0)">𝅘𝅥𝅰</button>
-                <button class="piano-button" id="pbtr" onclick="">3</button>
+                <button class="piano-button" id="pbdot" onclick="game.toggleDot()">•</button>
                 <button class="piano-button" id="pbup" onclick="game.toggleOctave()">^</button>
+                <button class="piano-button" id="pbr" onclick="game.pushRest()">𝄽</button>
             </div>
             <div style="right:0;">
                 <button class="piano-button">▶</button>
@@ -74,9 +75,14 @@
         let game = new Game(new sequence(2, 4).pushNote(60, 3).pushNote(60, 3).pushNote(60, 2).pushNote(60, 2).pushNote(60, 1).pushNote(60, 1).pushRest(2).pushNote(60, 2));
         game.changeLength(2)
 
-        window.onkeypress = function(event) {
-            if (event.keyCode == 13) {
-                game.advanceSequence();
+        window.onkeydown = function(event) {
+            switch(event.keyCode){
+                case 8:
+                    game.deleteNote(); 
+                    break;
+                case 13: 
+                    game.advanceSequence(); 
+                    break;
             }
         }
     </script>

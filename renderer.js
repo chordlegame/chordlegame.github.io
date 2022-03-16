@@ -82,7 +82,14 @@ function drawSVG(element, measurenum, beatsnum, seq = null){
     });
 }
 
-function drawSVGWithColor(element, measurenum, beatsnum, seq, base){
+const matchColors = {
+    0: '#818384', //grey
+    1: '#6aaa64', //green
+    2: '#c9b458', //yellow
+    3: '#c98447' //orange
+}
+
+function drawSVGWithColor(element, measurenum, beatsnum, seq, colors){
     var measureNum = measurenum;
     var beatsNum = measureNum * beatsnum;
     var beatspM = beatsnum;
@@ -150,17 +157,15 @@ function drawSVGWithColor(element, measurenum, beatsnum, seq, base){
         eigthPointer += maxlength;
     }
 
-    let colors = seq.compare(base);
+    
 
     let indexOfColor = 0;
     notes.forEach(function(note){
-        let colnumber = colors[indexOfColor];
-        let col = '#818384';
-        
-        switch (colnumber){
-            case 1: col = '#c9b458'; break;
-            case 2: col = '#6aaa64'; break;
-        }
+        if(!(note instanceof VF.StaveNote)) return;
+
+        console.log(indexOfColor + ": " + colors[indexOfColor]);
+
+        let col = matchColors[colors[indexOfColor]];
 
         note.setStyle({fillStyle: col, strokeStyle: col});
         indexOfColor++;
