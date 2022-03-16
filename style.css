@@ -62,17 +62,18 @@ p {
     flex-direction: column;
     align-items: center;
 }
-  
-#game-keyboard div {
-    display: flex;
+
+#piano-keyboard{
+    display: block;
 }
 
 .key {
     float: left;
     position: relative;
-    width: 69px;
+    width: 13.85%;
     height: 240px;
     margin: 0 2px 2px 0;
+    padding: 0%;
     background: #fff;
     border-radius: 0 0 4px 4px;
 }
