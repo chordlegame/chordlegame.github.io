@@ -26,10 +26,129 @@ const noteStrings = {
     11: "b"
 }
 
+const noteNumbers = {
+    "c" : 0,
+    "d" : 2,
+    "e" : 4,
+    "f" : 5,
+    "g" : 7,
+    "a" : 9,
+    "b" : 11,
+}
+
+class ChordType {
+    suffixes : string[];
+    notes : number[];
+
+    constructor(suffixstring : string, notestring : string){
+        this.suffixes = suffixstring.replace(" ", "").split(",");
+        this.notes = notestring.replace(" ", "").split(",").map(x => +x);
+    }
+}
+
+const chordTypes : ChordType[] = [
+    new ChordType("5",          "1,7"),
+    new ChordType(",M",         "1,4,7"),
+    new ChordType("-,m",        "1,3,7"),
+    new ChordType("o,dim",      "1,3,6"),
+    new ChordType("+,aug",      "1,4,8"),
+    new ChordType("6",          "1,4,7,9"),
+    new ChordType("m6,-6",      "1,3,7,9"),
+    new ChordType("7",          "1,4,7,10"),
+    new ChordType("M7,maj7",    "1,4,7,11"),
+    new ChordType("m7,-7,mi7",  "1,3,7,10"),
+    new ChordType("o7,dim7",    "1,3,6,9"),
+    new ChordType("o/7,hd7",    "1,3,6,10"),
+    new ChordType("9",          "1,4,7,10,14"),
+    new ChordType("M9,maj9",    "1,4,7,11,14"),
+    new ChordType("mi9,-9,m9",  "1,3,7,10,14"),
+    new ChordType("6/9,69",     "1,4,7,9,14"),
+]
+
+//returns the note + the offset when the note ends
+function extractNote(input : string) : [number, number] {
+    let note = noteNumbers[input.charAt(0)]
+    let offset = 2;
+
+    if(input.charAt[1] == 's' || input.charAt[1] == '#') note++;
+    else if (input.charAt[1] == 'b') note--;
+    else offset = 1;
+
+    return [note, offset];
+}
+
+class Chord{
+    duration: number;
+    notes : Note[]
+    name;
+
+    constructor(inputstr : string, duration : number){
+        this.name = inputstr;
+        this.duration = duration;
+
+        let [root, charoffset] = extractNote(inputstr);
+
+        root += 12 * 2;
+        
+        chordTypes.forEach(e => {
+            e.suffixes.forEach(suffix => {
+                if(inputstr.endsWith(suffix)){
+                    this.notes = e.notes.map(e => new Note(e + root, duration));
+                    return;
+                }
+            });
+        });
+    }
+}
+
+async function sequenceFromFile(filepath : string, index : number = 0) : sequence {
+    let inputstrings = fetch('https://chordlegame.github.io/').toString().split(";");
+    return sequenceFromString(inputstrings[index]);
+}
+
+async function sequenceFromString(seqString : string) : sequence{
+    let lines : string[] = seqString.split("\n");
+    let seq : sequence = new sequence(0, 0);
+    for(var line of lines){
+        let tokens : string[] = line.split(" ");
+        switch(tokens[0].toLowerCase()){
+            case "swing":
+                seq.swing = /^\s*(true|1|on)\s*$/i.test(tokens[1]);
+                break;
+            case "tempo":
+                seq.tempo = +tokens[1];
+                break;
+            case "timesignature":
+                seq.beatsPerMeasure = +tokens[1];
+                break;
+            case "chords":
+                seq.measures = tokens.length - 2;
+                processChords(tokens.slice(2), +tokens[1], seq);
+                break;
+            case "melody":
+                break;
+        }
+    }
+}
+
+function processChords(chords : string[], duration : number, seq : sequence) {
+    for(var chord of chords){
+        seq.pushChord(chord, duration);
+    }
+}
+
+function processMelody() {
+
+}
+
 export class sequence{
     notes : StaffElement[];
     measures : number;
     beatsPerMeasure : number;
+    chords : Chord[];
+
+    swing : boolean;
+    tempo : number;
 
     constructor(measures : number, beatsPerMeasure : number){
         this.measures = measures;
@@ -56,14 +175,16 @@ export class sequence{
         return this.notes.pop().duration;
     }
 
+    pushChord(chord : string, duration : number){
+        this.chords.push(new Chord(chord, duration));
+    }
+
     /*
     colors:
     0: grey
     1: green
     2: light yellow
     3: dark yellow
-
-
     */
     //returns an array of integers analagous to the object being enacted upon, win
     compare(comparor : sequence) : [number[], boolean] {

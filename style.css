@@ -1,5 +1,6 @@
 h1 {
     text-align: center;
+    display: block;
     font-size: 40px;
     border-bottom: 1px solid #3a3a3c;
     background-color: #00000000;
@@ -35,32 +36,6 @@ p {
 
 .staff {
     max-width: max-content;
-}
-
-.game-board{
-    height: 100%;
-}
-
-.second-row {
-    margin: 0.5rem 0;
-}
-  
-.keyboard-button {
-    font-size: 1.8rem;
-    font-weight: 700;
-    padding: 0.5rem;
-    margin: 0 2px;
-    cursor: pointer;
-    border-radius: 4px;
-    text-transform: uppercase;
-    background-color: #818384;
-}
-
-#game-keyboard {
-    margin: 1rem 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 #piano-keyboard{
