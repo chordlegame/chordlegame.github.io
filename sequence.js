@@ -39,11 +39,148 @@ var noteStrings = {
     10: "bb",
     11: "b"
 };
+var noteNumbers = {
+    "c": 0,
+    "d": 2,
+    "e": 4,
+    "f": 5,
+    "g": 7,
+    "a": 9,
+    "b": 11
+};
+var ChordType = /** @class */ (function () {
+    function ChordType(suffixstring, notestring) {
+        this.suffixes = suffixstring.replace(" ", "").split(",");
+        this.notes = notestring.replace(" ", "").split(",").map(function (x) { return +x; });
+    }
+    return ChordType;
+}());
+var chordTypes = [
+    new ChordType("5", "0,7"),
+    new ChordType(",M", "0,4,7"),
+    new ChordType("-,m", "0,3,7"),
+    new ChordType("o,dim", "0,3,6"),
+    new ChordType("+,aug", "0,4,8"),
+    new ChordType("6", "0,4,7,9"),
+    new ChordType("m6,-6", "0,3,7,9"),
+    new ChordType("7", "0,4,7,10"),
+    new ChordType("M7,maj7", "0,4,7,11"),
+    new ChordType("m7,-7,mi7", "0,3,7,10"),
+    new ChordType("o7,dim7", "0,3,6,9"),
+    new ChordType("o/7,hd7", "0,3,6,10"),
+    new ChordType("9", "0,4,7,10,14"),
+    new ChordType("M9,maj9", "0,4,7,11,14"),
+    new ChordType("mi9,-9,m9", "0,3,7,10,14"),
+    new ChordType("6/9,69", "0,4,7,9,14"),
+];
+//returns the note + the offset when the note ends
+function extractNote(input) {
+    var note = noteNumbers[input.charAt(0).toLowerCase()];
+    var offset = 2;
+    if (input.charAt[1] == 's' || input.charAt[1] == '#')
+        note++;
+    else if (input.charAt[1] == 'b')
+        note--;
+    else
+        offset = 1;
+    return [note, offset];
+}
+var Chord = /** @class */ (function () {
+    function Chord(inputstr, duration) {
+        var _this = this;
+        this.name = inputstr;
+        this.duration = duration;
+        var _a = extractNote(inputstr), root = _a[0], charoffset = _a[1];
+        console.log(charoffset);
+        root += 12 * 2;
+        console.log(root);
+        chordTypes.forEach(function (e) {
+            e.suffixes.forEach(function (suffix) {
+                if (inputstr.substring(charoffset) === suffix) {
+                    _this.notes = e.notes.map(function (e) { return new Note(e + root, duration); });
+                    _this.notes.forEach(function (n) { return console.log(n); });
+                    return;
+                }
+            });
+        });
+    }
+    Chord.prototype.toChordSymbol = function () {
+        var an = new VF.Annotation(this.name);
+        return an;
+    };
+    return Chord;
+}());
+function sequenceFromFile(sequences, index) {
+    if (index === void 0) { index = 0; }
+    var inputstrings = sequences.split(";");
+    console.log(inputstrings[0]);
+    var seq = sequenceFromString(inputstrings[index]);
+    return seq;
+}
+function sequenceFromString(seqString) {
+    var lines = seqString.split("\n");
+    var seq = new sequence(0, 0);
+    for (var _i = 0, lines_1 = lines; _i < lines_1.length; _i++) {
+        var line = lines_1[_i];
+        var tokens = line.split(" ");
+        switch (tokens[0].toLowerCase()) {
+            case "swing":
+                seq.swing = /^\s*(true|1|on)\s*$/i.test(tokens[1]);
+                break;
+            case "tempo":
+                seq.tempo = +tokens[1];
+                break;
+            case "timesignature":
+                seq.beatsPerMeasure = +tokens[1];
+                break;
+            case "chords":
+                seq.measures = tokens.length - 2;
+                for (var _a = 0, _b = tokens.slice(2); _a < _b.length; _a++) {
+                    var chord = _b[_a];
+                    switch (chord) {
+                        case '-':
+                            seq.chords.push(null);
+                            break;
+                        case '#':
+                            seq.pushChord(seq.chords[seq.chords.length - 1].name, +tokens[1]);
+                            break;
+                        default:
+                            seq.pushChord(chord, +tokens[1]);
+                            break;
+                    }
+                }
+                break;
+            case "melody":
+                processMelody(tokens.splice(1), seq);
+                break;
+        }
+    }
+    return seq;
+}
+function processMelody(tokens, seq) {
+    for (var index = 0; index < tokens.length; index++) {
+        var notestr = tokens[index];
+        var duration = 1;
+        while (tokens[index + 1] === '#') {
+            duration++;
+            index++;
+        }
+        if (notestr === '-') {
+            seq.pushRest(duration);
+        }
+        else {
+            var _a = extractNote(notestr), notenum = _a[0], charoffset = _a[1];
+            var octave = +notestr.substring(charoffset);
+            seq.pushNote(notenum + (octave * 12), duration);
+        }
+    }
+}
 var sequence = /** @class */ (function () {
     function sequence(measures, beatsPerMeasure) {
         this.measures = measures;
         this.beatsPerMeasure = beatsPerMeasure;
         this.notes = [];
+        this.chords = [];
     }
     sequence.prototype.pushNote = function (notenumber, duration) {
         this.notes.push(new Note(notenumber, duration));
@@ -60,14 +197,16 @@ var sequence = /** @class */ (function () {
     sequence.prototype.deleteLast = function () {
         return this.notes.pop().duration;
     };
+    sequence.prototype.pushChord = function (chord, duration) {
+        console.log(chord + "," + duration);
+        this.chords.push(new Chord(chord, duration));
+    };
     /*
     colors:
     0: grey
     1: green
     2: light yellow
     3: dark yellow
-
-
     */
     //returns an array of integers analagous to the object being enacted upon, win
     sequence.prototype.compare = function (comparor) {

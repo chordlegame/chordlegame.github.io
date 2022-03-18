@@ -10,6 +10,7 @@
 <body>
     <script src="https://unpkg.com/vexflow@3.0.9/releases/vexflow-min.js"></script>
     <script src="jquery-3.6.0.min.js"></script>
+    <script src="audiosynth.js"></script>
     
     <div id="header">
         <h1>      
@@ -22,6 +23,9 @@
             </button> -->
             CHORDLE
         </h1>
+    </div>
+    <div id="chords">
+
     </div>
     <div id="game-board">
         <div id="sheet0" class="staff"></div>
@@ -45,7 +49,7 @@
                 <button class="piano-button" id="pbr" onclick="game.pushRest()">𝄽</button>
             </div>
             <div style="right:0;">
-                <button class="piano-button">▶</button>
+                <button class="piano-button" onclick="play(game.baselineSequence)">▶</button>
                 <button class="piano-button">c</button>
             </div>
         </div>
@@ -68,12 +72,23 @@
         var exports = {};
         function require(a){return null;}
     </script>
+    <script src="sequences.js"></script>
     <script src="sequence.js"></script>
+    <script src="sequencePlayer.js"></script>
     <script src="renderer.js"></script>
     <script src="game.js"></script>
     <script>
-        let game = new Game(new sequence(2, 4).pushNote(60, 3).pushNote(60, 3).pushNote(60, 2).pushNote(60, 2).pushNote(60, 1).pushNote(60, 1).pushRest(2).pushNote(60, 2));
+        let game = new Game(sequenceFromFile(_daily_sequences, 0));
         game.changeLength(2)
+
+        let chordElement = document.getElementById("chords");
+        game.baselineSequence.chords.forEach(function(c) {
+            const node = document.createElement("div");
+            node.innerHTML = c.name;
+            chordElement.appendChild(node);
+        });
+        const node = document.createElement("div");
+        chordElement.appendChild(node);
 
         window.onkeydown = function(event) {
             switch(event.keyCode){

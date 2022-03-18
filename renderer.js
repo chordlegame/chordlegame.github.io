@@ -1,11 +1,13 @@
 //@ts-check
 /**
- * 
+ * A
  * @param {string} element 
  * @param {sequence} seq 
+ * @param {number} beatsnum
+ * @param {number} measurenum
  */
 
-function drawSVG(element, measurenum, beatsnum, seq = null){
+function drawSVG(element, measurenum, beatsnum, seq = null, drawChords = true){
     var measureNum = measurenum;
     var beatsNum = measureNum * beatsnum;
     var beatspM = beatsnum;

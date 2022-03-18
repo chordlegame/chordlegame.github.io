@@ -61,12 +61,12 @@ class Game {
             new gameSequence(base)
         ];
 
-        drawSVG("sheet0", 2, 4, this.rows[0]);
-        drawSVG("sheet1", 2, 4, this.rows[0]);
-        drawSVG("sheet2", 2, 4, this.rows[0]);
-        drawSVG("sheet3", 2, 4, this.rows[0]);
-        drawSVG("sheet4", 2, 4, this.rows[0]);
-        drawSVG("sheet5", 2, 4, this.rows[0]);
+        drawSVG("sheet0", 2, 4, this.rows[0].sequence);
+        drawSVG("sheet1", 2, 4, this.rows[0].sequence);
+        drawSVG("sheet2", 2, 4, this.rows[0].sequence);
+        drawSVG("sheet3", 2, 4, this.rows[0].sequence);
+        drawSVG("sheet4", 2, 4, this.rows[0].sequence);
+        drawSVG("sheet5", 2, 4, this.rows[0].sequence);
 
         this.advanceSequence();
     }

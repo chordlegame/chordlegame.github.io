@@ -47,27 +47,27 @@ class ChordType {
 }
 
 const chordTypes : ChordType[] = [
-    new ChordType("5",          "1,7"),
-    new ChordType(",M",         "1,4,7"),
-    new ChordType("-,m",        "1,3,7"),
-    new ChordType("o,dim",      "1,3,6"),
-    new ChordType("+,aug",      "1,4,8"),
-    new ChordType("6",          "1,4,7,9"),
-    new ChordType("m6,-6",      "1,3,7,9"),
-    new ChordType("7",          "1,4,7,10"),
-    new ChordType("M7,maj7",    "1,4,7,11"),
-    new ChordType("m7,-7,mi7",  "1,3,7,10"),
-    new ChordType("o7,dim7",    "1,3,6,9"),
-    new ChordType("o/7,hd7",    "1,3,6,10"),
-    new ChordType("9",          "1,4,7,10,14"),
-    new ChordType("M9,maj9",    "1,4,7,11,14"),
-    new ChordType("mi9,-9,m9",  "1,3,7,10,14"),
-    new ChordType("6/9,69",     "1,4,7,9,14"),
+    new ChordType("5",          "0,7"),
+    new ChordType(",M",         "0,4,7"),
+    new ChordType("-,m",        "0,3,7"),
+    new ChordType("o,dim",      "0,3,6"),
+    new ChordType("+,aug",      "0,4,8"),
+    new ChordType("6",          "0,4,7,9"),
+    new ChordType("m6,-6",      "0,3,7,9"),
+    new ChordType("7",          "0,4,7,10"),
+    new ChordType("M7,maj7",    "0,4,7,11"),
+    new ChordType("m7,-7,mi7",  "0,3,7,10"),
+    new ChordType("o7,dim7",    "0,3,6,9"),
+    new ChordType("o/7,hd7",    "0,3,6,10"),
+    new ChordType("9",          "0,4,7,10,14"),
+    new ChordType("M9,maj9",    "0,4,7,11,14"),
+    new ChordType("mi9,-9,m9",  "0,3,7,10,14"),
+    new ChordType("6/9,69",     "0,4,7,9,14"),
 ]
 
 //returns the note + the offset when the note ends
 function extractNote(input : string) : [number, number] {
-    let note = noteNumbers[input.charAt(0)]
+    let note = noteNumbers[input.charAt(0).toLowerCase()];
     let offset = 2;
 
     if(input.charAt[1] == 's' || input.charAt[1] == '#') note++;
@@ -88,25 +88,37 @@ class Chord{
 
         let [root, charoffset] = extractNote(inputstr);
 
+        console.log(charoffset);
+
         root += 12 * 2;
+
+        console.log(root);
         
         chordTypes.forEach(e => {
             e.suffixes.forEach(suffix => {
-                if(inputstr.endsWith(suffix)){
+                if(inputstr.substring(charoffset) === suffix){
                     this.notes = e.notes.map(e => new Note(e + root, duration));
+                    this.notes.forEach(n => console.log(n));
                     return;
                 }
             });
         });
     }
+
+    toChordSymbol() : Vex.Flow.Annotation {
+        let an = new VF.Annotation(this.name);
+        return an;
+    }
 }
 
-function sequenceFromFile(filepath : string, index : number = 0) : sequence {
-    let inputstrings = fetch('https://chordlegame.github.io/').toString().split(";");
-    return sequenceFromString(inputstrings[index]);
+function sequenceFromFile(sequences : string, index : number = 0) {
+    let inputstrings : string[] = sequences.split(";");
+    console.log(inputstrings[0])
+    let seq = sequenceFromString(inputstrings[index]);
+    return seq;
 }
 
-async function sequenceFromString(seqString : string) : sequence{
+function sequenceFromString(seqString : string) : sequence {
     let lines : string[] = seqString.split("\n");
     let seq : sequence = new sequence(0, 0);
     for(var line of lines){
@@ -123,22 +135,42 @@ async function sequenceFromString(seqString : string) : sequence{
                 break;
             case "chords":
                 seq.measures = tokens.length - 2;
-                processChords(tokens.slice(2), +tokens[1], seq);
+                for(var chord of tokens.slice(2)){
+                    switch(chord){
+                        case '-': seq.chords.push(null); break;
+                        case '#': seq.pushChord(seq.chords[seq.chords.length - 1].name, +tokens[1]); break;     
+                        default: seq.pushChord(chord, +tokens[1]); break;
+                    }
+                }
                 break;
             case "melody":
+                processMelody(tokens.splice(1), seq);
                 break;
         }
     }
+
+    return seq;
 }
 
-function processChords(chords : string[], duration : number, seq : sequence) {
-    for(var chord of chords){
-        seq.pushChord(chord, duration);
+function processMelody(tokens : string[], seq : sequence) {
+    for(let index = 0; index < tokens.length; index++){
+        let notestr : string = tokens[index];
+        let duration = 1;
+
+        while(tokens[index + 1] === '#') {
+            duration++;
+            index++;
+        }
+
+        if(notestr === '-') {
+            seq.pushRest(duration);
+        }
+        else {
+            let [notenum, charoffset] = extractNote(notestr);
+            let octave : number = +notestr.substring(charoffset);
+            seq.pushNote(notenum + (octave * 12), duration);
+        }
     }
-}
-
-function processMelody() {
-
 }
 
 export class sequence{
@@ -154,6 +186,7 @@ export class sequence{
         this.measures = measures;
         this.beatsPerMeasure = beatsPerMeasure;
         this.notes = [];
+        this.chords = [];
     }
 
     pushNote(notenumber: number, duration: number){
@@ -176,6 +209,7 @@ export class sequence{
     }
 
     pushChord(chord : string, duration : number){
+        console.log(chord + "," + duration)
         this.chords.push(new Chord(chord, duration));
     }
 
