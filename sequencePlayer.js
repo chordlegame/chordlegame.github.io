@@ -18,9 +18,14 @@ function delay(milisec) {
  * @param {number} subdiv
  * @returns {number}
  */
-function beatToMS(BPM, subdiv){
+function beatToS(BPM, subdiv){
     let spb = 60.0 / BPM; //seconds per beat
-    return spb * subdiv * 1000.0;
+    return spb * subdiv;
+}
+
+function beatToMS(BPM, subdiv){
+
+    return beatToS(BPM, subdiv) * 1000.0;
 }
 
 const piano = Synth.createInstrument('piano');
@@ -28,7 +33,7 @@ const organ = Synth.createInstrument('organ');
 const acoustic = Synth.createInstrument('acoustic');
 const edm = Synth.createInstrument('edm');
 
-Synth.setSampleRate(44100);
+Synth.setSampleRate(41400);
 
 const noteToAudioSynthNote = {
     0: "C",
@@ -51,7 +56,7 @@ const noteToAudioSynthNote = {
  */
 //duration is in seconds
 function playNote(note, duration){
-    piano.play(noteToAudioSynthNote[note % 12], note / 12, duration);
+    acoustic.play(noteToAudioSynthNote[note % 12], (note / 12), duration);
 }
 
 /**
@@ -60,13 +65,38 @@ function playNote(note, duration){
 
 async function play(seq) {
     let bpm = seq.tempo;
-    console.log("bpm: " + bpm);
+    
+    playChords(seq);
 
     for(let element of seq.notes){
         if(element instanceof Note){
-            playNote(element.note, element.duration);
+            playNote(element.note, beatToS(bpm, element.duration / 2.0));
             await delay(beatToMS(bpm, element.duration / 2.0));
         }
         else await delay(beatToMS(bpm, element.duration / 2.0));
+    }
+}
+
+/**
+ * @param {sequence} seq 
+ */
+async function playChords(seq){
+    let bpm = seq.tempo;
+    console.log(bpm);
+    let duration = 0;
+
+    for(let chord of seq.chords){
+        if(duration == 0){
+            duration = chord.duration/2.0;
+            console.log(duration);
+        }
+
+        if(chord == null) await delay(beatToMS(bpm, duration));
+        else {
+            for(var element of chord.notes){
+                playNote(element.note + 12, 1)//beatToS(bpm, duration))
+            };
+            await delay(beatToMS(bpm, duration));
+        }   
     }
 }

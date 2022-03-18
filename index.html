@@ -84,6 +84,7 @@
         let chordElement = document.getElementById("chords");
         game.baselineSequence.chords.forEach(function(c) {
             const node = document.createElement("div");
+            node.classList.add("chordSymbol");
             node.innerHTML = c.name;
             chordElement.appendChild(node);
         });

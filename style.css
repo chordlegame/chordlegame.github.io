@@ -41,7 +41,12 @@ p {
     margin-right: 25px;
     margin-top: 10px;
     margin-bottom: 0px;
-    font-size: 2rem;
+    font-size: 1.4rem;
+}
+
+.chordSymbol {
+    margin-left: 10px;
+    margin-right: 0px;
 }
 
 .staff {
