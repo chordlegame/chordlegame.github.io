@@ -7,7 +7,7 @@
  * @param {number} measurenum
  */
 
-function drawSVG(element, measurenum, beatsnum, seq = null, drawChords = true){
+function drawSVG(element, measurenum, beatsnum, seq = null, contentwidth = 500){
     var measureNum = measurenum;
     var beatsNum = measureNum * beatsnum;
     var beatspM = beatsnum;
@@ -18,8 +18,8 @@ function drawSVG(element, measurenum, beatsnum, seq = null, drawChords = true){
     var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
 
     // Size our SVG:
-    renderer.resize(500, 85);
-    var stave = new VF.Stave(25, -15, 450, {fill_style : 'white'});
+    renderer.resize(contentwidth, 85);
+    var stave = new VF.Stave(25, -15, contentwidth - 50, {fill_style : 'white'});
 
     var context = renderer.getContext();
 
@@ -91,7 +91,7 @@ const matchColors = {
     3: '#c98447' //orange
 }
 
-function drawSVGWithColor(element, measurenum, beatsnum, seq, colors){
+function drawSVGWithColor(element, measurenum, beatsnum, seq, colors, contentwidth = 500){
     var measureNum = measurenum;
     var beatsNum = measureNum * beatsnum;
     var beatspM = beatsnum;
@@ -102,8 +102,8 @@ function drawSVGWithColor(element, measurenum, beatsnum, seq, colors){
     var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
 
     // Size our SVG:
-    renderer.resize(500, 85);
-    var stave = new VF.Stave(25, -15, 450, {fill_style : 'white'});
+    renderer.resize(contentwidth, 85);
+    var stave = new VF.Stave(25, -15, contentwidth - 50, {fill_style : 'white'});
 
     var context = renderer.getContext();
 

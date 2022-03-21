@@ -11,7 +11,53 @@
     <script src="https://unpkg.com/vexflow@3.0.9/releases/vexflow-min.js"></script>
     <script src="jquery-3.6.0.min.js"></script>
     <script src="audiosynth.js"></script>
-    
+    <script>
+        function treatAsUTC(date) {
+            var result = new Date(date);
+            result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+            return result;
+        }
+
+        function daysBetween(startDate, endDate) {
+            var millisecondsPerDay = 24 * 60 * 60 * 1000;
+            return Math.floor((treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay);
+        }
+
+        const chordleNumber = Math.max(daysBetween(new Date("3/22/2022"), new Date()), 0);
+    </script>
+
+    <div id="overlayBackground" hidden>
+        <div id="endscreen" class="endingScreen">
+            <h2 id="endscreenText"></h2>
+            <p id="chordleNum" style="padding-top: 2rem;">CHORDLE</p>
+            <div id="basesheet" class="staff"></div>
+            <div id="endNextDisplay">
+                <p>NEXT CHORDLE</p>
+                <h2 id="clock"></h2>
+
+                <script>
+                    document.getElementById("chordleNum").innerHTML = "CHORDLE " + chordleNumber;
+
+                    function getCountDownString(){
+                        const date = new Date();
+                        let seconds = (59 - date.getSeconds()).toString().padStart(2, '0');
+                        let minutes = (59 - date.getMinutes()).toString().padStart(2, '0');
+                        let hours = (23 - date.getHours()).toString().padStart(2, '0');
+
+                        return `${hours}:${minutes}:${seconds}`;
+                    }
+
+                    function updateTimer(){
+                        document.getElementById('clock').innerHTML = getCountDownString();
+                        setTimeout(updateTimer, 1000)
+                    }
+
+                    updateTimer();
+                </script>
+            </div>
+        </div>
+    </div>
+
     <div id="header">
         <h1>      
             <!-- <button id="help-button" class="icon" aria-label="help" style="text-align: left;">
@@ -35,7 +81,6 @@
         <div id="sheet4" class="staff"></div>
         <div id="sheet5" class="staff"></div>
     </div>
-    
     <div id="piano-keyboard">
         <div class="piano-buttons" style="display: flex; justify-content: space-between;">
             <div style="left:0;">
@@ -81,6 +126,27 @@
         let game = new Game(sequenceFromFile(_daily_sequences, 0));
         game.changeLength(2)
 
+        let overlayElement = document.getElementById("overlayBackground");
+        let endscreenElement = document.getElementById("endscreen");
+        let endscreenText = document.getElementById("endscreenText");
+
+        game.Win = function(){
+            overlayElement.classList.add("visible");
+            $("#overlayBackground").fadeIn(1000);
+            overlayElement.removeAttribute("hidden");
+            endscreenText.innerHTML = "VICTORY!";
+        }
+
+        game.Lose = function(){
+            overlayElement.classList.add("visible");
+            $("#overlayBackground").fadeIn(1000);
+            overlayElement.removeAttribute("hidden");
+            endscreenText.innerHTML = "DEFEAT!";
+
+        }
+
+        drawSVG("basesheet", 0, 0, game.baselineSequence, 450)
+
         let chordElement = document.getElementById("chords");
         game.baselineSequence.chords.forEach(function(c) {
             const node = document.createElement("div");
@@ -101,6 +167,7 @@
                     break;
             }
         }
+
         if (navigator.requestMIDIAccess) {
             console.log('This browser supports WebMIDI!');
         } else {
