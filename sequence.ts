@@ -36,6 +36,23 @@ const noteNumbers = {
     "b" : 11,
 }
 
+const toneDurationStrings = {
+    1: "8n",
+    2: "4n",
+    3: "4n.",
+    4: "2n",
+    6: "2n.",
+    8: "1n"
+}
+
+function toToneTimeString(time : number) : string {
+    let measure = Math.floor(time / 8);
+    let quarter = Math.floor((time % 8) / 2);
+    let eighth = (time % 2) * 2;
+
+    return measure + ":" + quarter + ":" + eighth;
+}
+
 class ChordType {
     suffixes : string[];
     notes : number[];
@@ -108,6 +125,12 @@ class Chord{
     toChordSymbol() : Vex.Flow.Annotation {
         let an = new VF.Annotation(this.name);
         return an;
+    }
+
+    toToneString(chordNumber) : [string[], string] {
+        let notes : string[] = this.notes.map(note => noteStrings[note.note % 12] + (Math.floor(note.note/12) + 1));
+
+        return [notes, toToneTimeString(chordNumber * this.duration)]
     }
 }
 
@@ -294,6 +317,28 @@ export class sequence{
         }
 
         return [null, eigthPointer];
+    }
+
+    toToneArray() {
+        let notes = [];
+
+        let eigthPointer = 0;
+        for(let n of this.notes){
+            if(n instanceof Rest) {}
+            else if(n instanceof Note) {
+                let dur : string = toToneTimeString(eigthPointer);
+                let note : string = noteStrings[n.note % 12] + Math.floor(n.note/12);
+                console.log(dur + " , " + note)
+                notes.push([dur, note]);
+            }
+            else if(n instanceof Triplet) {
+                
+            }
+
+            eigthPointer += n.duration;
+        }
+
+        return notes;
     }
 }
 

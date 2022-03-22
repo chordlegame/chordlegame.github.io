@@ -48,6 +48,20 @@ var noteNumbers = {
     "a": 9,
     "b": 11
 };
+var toneDurationStrings = {
+    1: "8n",
+    2: "4n",
+    3: "4n.",
+    4: "2n",
+    6: "2n.",
+    8: "1n"
+};
+function toToneTimeString(time) {
+    var measure = Math.floor(time / 8);
+    var quarter = Math.floor((time % 8) / 2);
+    var eighth = (time % 2) * 2;
+    return measure + ":" + quarter + ":" + eighth;
+}
 var ChordType = /** @class */ (function () {
     function ChordType(suffixstring, notestring) {
         this.suffixes = suffixstring.replace(" ", "").split(",");
@@ -107,6 +121,10 @@ var Chord = /** @class */ (function () {
     Chord.prototype.toChordSymbol = function () {
         var an = new VF.Annotation(this.name);
         return an;
+    };
+    Chord.prototype.toToneString = function (chordNumber) {
+        var notes = this.notes.map(function (note) { return noteStrings[note.note % 12] + (Math.floor(note.note / 12) + 1); });
+        return [notes, toToneTimeString(chordNumber * this.duration)];
     };
     return Chord;
 }());
@@ -277,6 +295,24 @@ var sequence = /** @class */ (function () {
             beatofnote = eigthPointer;
         }
         return [null, eigthPointer];
+    };
+    sequence.prototype.toToneArray = function () {
+        var notes = [];
+        var eigthPointer = 0;
+        for (var _i = 0, _a = this.notes; _i < _a.length; _i++) {
+            var n = _a[_i];
+            if (n instanceof Rest) { }
+            else if (n instanceof Note) {
+                var dur = toToneTimeString(eigthPointer);
+                var note = noteStrings[n.note % 12] + Math.floor(n.note / 12);
+                console.log(dur + " , " + note);
+                notes.push([dur, note]);
+            }
+            else if (n instanceof Triplet) {
+            }
+            eigthPointer += n.duration;
+        }
+        return notes;
     };
     return sequence;
 }());

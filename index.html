@@ -11,6 +11,8 @@
     <script src="https://unpkg.com/vexflow@3.0.9/releases/vexflow-min.js"></script>
     <script src="jquery-3.6.0.min.js"></script>
     <script src="audiosynth.js"></script>
+    <script src="https://unpkg.com/tone"></script>
+
     <script>
         function treatAsUTC(date) {
             var result = new Date(date);
@@ -94,7 +96,7 @@
                 <button class="piano-button" id="pbr" onclick="game.pushRest()">𝄽</button>
             </div>
             <div style="right:0;">
-                <button class="piano-button" onclick="play(game.baselineSequence)">▶</button>
+                <button class="piano-button" onclick="playToneTest(game.baselineSequence)">▶</button>
                 <button class="piano-button">c</button>
             </div>
         </div>
@@ -120,6 +122,7 @@
     <script src="sequences.js"></script>
     <script src="sequence.js"></script>
     <script src="sequencePlayer.js"></script>
+    <script src="sequencePlayerNew.js"></script>
     <script src="renderer.js"></script>
     <script src="game.js"></script>
     <script>
