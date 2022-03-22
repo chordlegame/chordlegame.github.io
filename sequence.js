@@ -303,10 +303,11 @@ var sequence = /** @class */ (function () {
             var n = _a[_i];
             if (n instanceof Rest) { }
             else if (n instanceof Note) {
-                var dur = toToneTimeString(eigthPointer);
+                var start = toToneTimeString(eigthPointer);
                 var note = noteStrings[n.note % 12] + Math.floor(n.note / 12);
-                console.log(dur + " , " + note);
-                notes.push([dur, note]);
+                var obj = { time: start, note: note, duration: n.duration };
+                console.log(obj);
+                notes.push(obj);
             }
             else if (n instanceof Triplet) {
             }

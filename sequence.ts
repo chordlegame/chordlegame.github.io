@@ -326,10 +326,11 @@ export class sequence{
         for(let n of this.notes){
             if(n instanceof Rest) {}
             else if(n instanceof Note) {
-                let dur : string = toToneTimeString(eigthPointer);
+                let start : string = toToneTimeString(eigthPointer);
                 let note : string = noteStrings[n.note % 12] + Math.floor(n.note/12);
-                console.log(dur + " , " + note)
-                notes.push([dur, note]);
+                let obj = {time: start, note: note, duration: n.duration};
+                console.log(obj);
+                notes.push(obj);
             }
             else if(n instanceof Triplet) {
                 

@@ -49,39 +49,47 @@ function checkStartAudioContext(){
 	return false;
 }
 
-function playToneTest(sequence){
-	if(checkStartAudioContext())
+let toneMelody = null;
+let toneChords = [];
 
-	Tone.Transport.stop();
+function playToneTest(sequence, mutePart = false){
 	Tone.Transport.clear();
+	Tone.Transport.stop();
+	Tone.Transport.seconds = 0;
+
+	if(checkStartAudioContext()){
+		let notes = sequence.toToneArray();
+
+		const part = new Tone.Part(function(time, obj){
+			pianoSynth.triggerAttackRelease(obj.note, obj.duration, time);
+		}, notes).start(0);
+
+		toneMelody = part;
+
+		let index = 0;
+		for(let chord of sequence.chords){
+			let [notes, start] = chord.toToneString(index);
+
+			console.log(notes.toString() + ", " + start)
+
+			const chordEvent = new Tone.ToneEvent(function(time, chord){
+				pianoSynth.triggerAttackRelease(chord, "1m", time);
+			}, notes);
+
+			chordEvent.start(start);
+
+			toneChords.push(chordEvent);
+
+			index++;
+		}
+	}
+
+	toneMelody.mute = mutePart;
 
 	Tone.Transport.bpm.value = sequence.tempo;
 
 	Tone.Transport.setLoopPoints(0, sequence.measures + "m");
 	Tone.Transport.loop = false;
-	
-	let notes = sequence.toToneArray();
-
-	const part = new Tone.Part(function(time, note){
-		pianoSynth.triggerAttackRelease(note, "8t", time);
-	}, notes).start(0);
-
-	let index = 0;
-	for(let chord of sequence.chords){
-		let [notes, start] = chord.toToneString(index);
-
-		console.log(notes.toString() + ", " + start)
-
-		const chordEvent = new Tone.ToneEvent(function(time, chord){
-			pianoSynth.triggerAttackRelease(chord, "1m", time);
-		}, notes);
-
-		chordEvent.start(start);
-
-		index++;
-	}
-	
-	part.loop = false;
 
     Tone.Transport.start();
 }
