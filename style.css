@@ -22,6 +22,10 @@ body {
     height: 100%;
 }
 
+:root{
+    --widthratio : 0;
+}
+
 button {
     padding: none;
     outline: none;
@@ -36,6 +40,10 @@ p {
     font-size: 1rem;
     padding: 0;
     margin: 0;
+}
+
+.staff{
+    transform: scale(calc(1vw / 1));
 }
 
 #overlayBackground{

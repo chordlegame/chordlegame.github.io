@@ -7,7 +7,7 @@
  * @param {number} measurenum
  */
 
-function drawSVG(element, measurenum, beatsnum, seq = null, contentwidth = 500){
+function drawSVG(element, measurenum, beatsnum, seq = null, targetWidth = 500){
     var measureNum = measurenum;
     var beatsNum = measureNum * beatsnum;
     var beatspM = beatsnum;
@@ -17,9 +17,14 @@ function drawSVG(element, measurenum, beatsnum, seq = null, contentwidth = 500){
         div.removeChild(div.firstChild);
     var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
 
+    var sc = Math.min(targetWidth, $(window).width()) / 500;
+    var width = targetWidth * sc, height = 85 * sc, yoffset = -15 * sc;
+
     // Size our SVG:
-    renderer.resize(contentwidth, 85);
-    var stave = new VF.Stave(25, -15, contentwidth - 50, {fill_style : 'white'});
+    renderer.resize(width, height);
+    var stave = new VF.Stave(25, yoffset, width - (50 * sc), {fill_style : 'white', spacing_between_lines_px: Math.floor(10 * sc)});
+
+    console.log("spaceing = " + stave.getSpacingBetweenLines())
 
     var context = renderer.getContext();
 
