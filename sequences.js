@@ -1,12 +1,14 @@
+//swing can be 0 or 1
+
 var _daily_sequences = 
-`Swing 0
-Tempo 150
+`Swing 1
+Tempo 160
 TimeSignature 4 4
-Chords 8 C7 #
-Melody C4 # D4 # E4 # F4 # G4 # A4 # B4 # C5 #
+Chords 8 A-7 D7
+Melody D4 E4 F4 G4 E4 # # C4 D4 # # # # # # #
 ;
-Swing 0
-Tempo 150
+Swing 1
+Tempo 160
 TimeSignature 4 4
-Chords 8 C7 #
-Melody C5 # D5 # E5 # F5 # G5 # A5 # B5 # C6 #`;
+Chords 8 A-7 D7
+Melody D4 E4 F4 G4 E4 # # C4 D4 # # # # # # #`;

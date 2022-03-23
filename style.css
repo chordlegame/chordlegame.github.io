@@ -52,16 +52,14 @@ p {
 }
 
 .endingScreen {
-    position: absolute;
-    top: 100px;
+    margin: auto;
     width: 450px;
-    height: 600px;
     outline: solid 2px #3a3a3c;
     border-radius: 4px;
-    vertical-align: middle;
     text-align: center;
+    margin-top: 100px;
     margin-left: 25px;
-    margin-right: 25px;
+    margin-right:25px;
 }
 
 #chords {
@@ -125,14 +123,34 @@ p {
     background-color: #222;
 }
 
-.piano-button {
-    margin: 1rem 0;
-    display:inline;
+.piano-button-above {
     font-size: 2.5rem;
     line-height: 60px;
-    width: 40px;
+    border-radius: 4px;
+    background-color: #000;
+    outline: solid 2px #999;
+    color: #fff;
+    width: 11.65%;
+    position: relative;
+    z-index: 1;
+}
+
+.piano-button {
+    font-size: 2.5rem;
+    line-height: 70px;
     border-radius: 4px;
     background-color: #fff;
+    width: 11.65%;
+    position: relative;
+    z-index: 0;
+}
+
+.piano-button-above:active {
+    background-color: #999;
+}
+
+.piano-button-above-pressed {
+    background-color: #999;
 }
 
 .piano-button:active {

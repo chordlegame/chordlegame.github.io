@@ -247,7 +247,8 @@ export class sequence{
     compare(comparor : sequence) : [number[], boolean] {
         let arr : number[] = [];
         let eigthPointer = 0;
-        let win  : boolean = true;
+        let win : boolean = true;
+        if (comparor.notes.length != this.notes.length) win = false;
 
         for(var note of this.notes){
             let [element, beat] = comparor.getElementAt8thNoteBeat(eigthPointer);
@@ -327,7 +328,7 @@ export class sequence{
             if(n instanceof Rest) {}
             else if(n instanceof Note) {
                 let start : string = toToneTimeString(eigthPointer);
-                let note : string = noteStrings[n.note % 12] + Math.floor(n.note/12);
+                let note : string = noteStrings[n.note % 12] + (Math.floor(n.note/12) + 1);
                 let obj = {time: start, note: note, duration: n.duration};
                 console.log(obj);
                 notes.push(obj);

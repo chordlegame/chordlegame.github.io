@@ -231,6 +231,8 @@ var sequence = /** @class */ (function () {
         var arr = [];
         var eigthPointer = 0;
         var win = true;
+        if (comparor.notes.length != this.notes.length)
+            win = false;
         for (var _i = 0, _a = this.notes; _i < _a.length; _i++) {
             var note = _a[_i];
             var _b = comparor.getElementAt8thNoteBeat(eigthPointer), element = _b[0], beat = _b[1];

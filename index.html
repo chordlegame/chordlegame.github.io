@@ -30,7 +30,7 @@
 
     <div id="overlayBackground" hidden>
         <div id="endscreen" class="endingScreen">
-            <h2 id="endscreenText"></h2>
+            <h2 id="endscreenText" style="padding-top: 2rem;"></h2>
             <p id="chordleNum" style="padding-top: 2rem;">CHORDLE</p>
             <div id="basesheet" class="staff"></div>
             <div id="endNextDisplay">
@@ -84,8 +84,19 @@
         <div id="sheet5" class="staff"></div>
     </div>
     <div id="piano-keyboard">
-        <div class="piano-buttons" style="display: flex; justify-content: space-between;">
-            <div style="left:0;">
+        <div class="piano-buttons" style="display: block; justify-content: center;">
+            <div id="upperButtons" style="margin-left: 5.65%; margin-right: -5.65%; margin-bottom: -14px;">
+                <button class="piano-button-above" onclick="playToneTest(game.baselineSequence)">▶</button>
+                <button class="piano-button-above" onclick="playToneTest(game.baselineSequence, true)">c</button>
+                
+                <button class="piano-button-above" style="visibility: hidden;"></button>
+                <button class="piano-button-above" style="visibility: hidden;"></button>
+                <button class="piano-button-above" style="visibility: hidden;"></button>
+
+                <button class="piano-button-above" id="pbd" onclick="game.deleteNote();">␡</button>
+                <button class="piano-button-above" id="pbe" onclick="game.advanceSequence()">⏎</button>
+            </div>
+            <div style="margin-bottom:20px;">
                 <button class="piano-button" id="pbl8" onclick="game.changeLength(8)">𝅝</button>
                 <button class="piano-button" id="pbl4" onclick="game.changeLength(4)">𝅗𝅥</button>
                 <button class="piano-button" id="pbl2" onclick="game.changeLength(2)">𝅘𝅥</button>
@@ -94,10 +105,6 @@
                 <button class="piano-button" id="pbdot" onclick="game.toggleDot()">•</button>
                 <button class="piano-button" id="pbup" onclick="game.toggleOctave()">^</button>
                 <button class="piano-button" id="pbr" onclick="game.pushRest()">𝄽</button>
-            </div>
-            <div style="right:0;">
-                <button class="piano-button" onclick="playToneTest(game.baselineSequence)">▶</button>
-                <button class="piano-button">c</button>
             </div>
         </div>
         <div class="keys">
@@ -126,7 +133,7 @@
     <script src="renderer.js"></script>
     <script src="game.js"></script>
     <script>
-        let game = new Game(sequenceFromFile(_daily_sequences, 0));
+        let game = new Game(sequenceFromFile(_daily_sequences, chordleNumber));
         game.changeLength(2)
 
         let overlayElement = document.getElementById("overlayBackground");
