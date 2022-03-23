@@ -88,7 +88,7 @@ p {
 .key {
     float: left;
     position: relative;
-    width: 13.85%;
+    width: calc(14.28% - 2px);
     height: 240px;
     margin: 0 2px 2px 0;
     padding: 0%;
@@ -130,7 +130,7 @@ p {
     background-color: #000;
     outline: solid 2px #999;
     color: #fff;
-    width: 11.65%;
+    width: calc(12.5% - 4px);
     position: relative;
     z-index: 1;
 }
@@ -140,7 +140,7 @@ p {
     line-height: 70px;
     border-radius: 4px;
     background-color: #fff;
-    width: 11.65%;
+    width: calc(12.5% - 4px);
     position: relative;
     z-index: 0;
 }
