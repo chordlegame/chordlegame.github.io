@@ -23,11 +23,16 @@
             return Math.floor((treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay);
         }
 
-        const chordleNumber = Math.max(daysBetween(new Date("3/22/2022"), new Date()), 0);
+        const chordleNumber = Math.max(daysBetween(new Date("3/25/2022"), new Date()), 0);
     </script>
 
     <div id="overlayBackground" hidden>
-        <div id="endscreen" class="endingScreen">
+        <button id="close-button" class="icon" aria-label="close" style="background-color: #121213; float:left;" onclick="hideBg()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 24 24" width="40">
+                <path fill="#fff" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+            </svg>
+        </button>
+        <div id="endscreen" class="endingScreen" style="display:none;">
             <h2 id="endscreenText" style="padding-top: 2rem;"></h2>
             <p id="chordleNum" style="padding-top: 2rem;">CHORDLE</p>
             <div id="basesheet" class="staff"></div>
@@ -56,19 +61,63 @@
                 </script>
             </div>
         </div>
+        <div id="tutorialscreen" class="endingScreen" style="display:none;">
+            <h2 style="padding-top: 2rem;">TUTORIAL</h2>
+            <p style="padding-top: 2rem; padding-left: 0.5rem; text-align: left; font-size: small;">Chordle is like wordle, but for music theory! 
+                Despite the name, chordle is more about the melody than the chords. Guess the melody in 6 tries. 
+                <br> <br> To listen to the melody, click on the play button. You can listen to just the chords underneath with the chord play button. You can input notes of the currently selected duration with the piano. 
+                <br> <br> There are special rules for chordle for what colors notes are. After submitting a response, your submission will be colored based on how correct it is.
+                <br> <br> Grey means that there isn't a note there. To fix it, make it a rest, or extend a note before it.
+            </p>
+            <img src="res/images/grey1.png" alt="Incorrect" height="100px">
+            <img src="res/images/grey2.png" alt="Correct" height="100px">
+            <p style="padding-top: 2rem; padding-left: 0.5rem; text-align: left; font-size: small;">
+                If a note is orange, it is covering another note. Make it shorter to fix.
+            </p>
+            <img src="res/images/orange.png" alt="Incorrect" height="100px">
+            <img src="res/images/green.png" alt="Correct" height="100px">
+            <p style="padding-top: 2rem; padding-left: 0.5rem; text-align: left; font-size: small;">
+                If a note is yellow, it is in the right place but has the wrong rhythm.
+            </p>
+            <img src="res/images/yellow.png" alt="Incorrect" height="100px">
+            
+            <div id="basesheet" class="staff"></div>
+        </div>
+        <div id="settingsscreen" class="endingScreen" style="display:none;">
+            <h2 style="padding-top: 2rem;">SETTINGS</h2>
+            <form action="#">
+                <label for="melody-instrument">Melody Instrument</label>
+                <select name="melody-instrument" onchange="melodyInstrument = instruments[this.selectedIndex]">
+                    <option value="0">Piano</option>
+                    <option value="1">ePiano</option>
+                </select>
+            </form>
+            <form action="#">
+                <label for="chords-instrument">Chords Instrument</label>
+                <select name="chords-instrument" onchange="chordsInstrument = instruments[this.selectedIndex];">
+                    <option value="0">Piano</option>
+                    <option value="1">ePiano</option>
+                </select>
+            </form>
+        </div>
     </div>
 
     <div id="header">
-        <h1>      
-            <!-- <button id="help-button" class="icon" aria-label="help" style="text-align: left;">
-                <help-icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
-                        <path fill="#3a3a3c" d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
-                    </svg>
-                </help-icon>
-            </button> -->
+        
+        <h1>
+            <button id="help-button" class="icon" aria-label="help" style="background-color: #121213; float:left;" onclick="showTutorial()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 24 24" width="40">
+                    <path fill="#fff" d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
+                </svg>
+            </button>
             CHORDLE
+            <button id="settings-button" class="icon" aria-label="settings" style="background-color: #121213; float:right;" onclick="showSettings()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 24 24" width="40">
+                    <path fill="#fff" d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"></path>
+                </svg>
+            </button>
         </h1>
+        
     </div>
     <div id="chords">
 
@@ -129,18 +178,21 @@
     <script src="sequencePlayerNew.js"></script>
     <script src="renderer.js"></script>
     <script src="game.js"></script>
-    <script>
+    <script>        
         let game = new Game(sequenceFromFile(_daily_sequences, chordleNumber));
         game.changeLength(2)
 
         let overlayElement = document.getElementById("overlayBackground");
         let endscreenElement = document.getElementById("endscreen");
         let endscreenText = document.getElementById("endscreenText");
+        let tutorialElement = document.getElementById("tutorialscreen");
+        let settingsElement = document.getElementById("settingsscreen");
 
         game.Win = function(){
             overlayElement.classList.add("visible");
             $("#overlayBackground").fadeIn(1000);
             overlayElement.removeAttribute("hidden");
+            endscreenElement.style.display = "block";
             endscreenText.innerHTML = "VICTORY!";
         }
 
@@ -148,8 +200,8 @@
             overlayElement.classList.add("visible");
             $("#overlayBackground").fadeIn(1000);
             overlayElement.removeAttribute("hidden");
+            endscreenElement.style.display = "block";
             endscreenText.innerHTML = "DEFEAT!";
-
         }
 
         drawSVG("basesheet", 0, 0, game.baselineSequence, 450)
@@ -175,10 +227,25 @@
             }
         }
 
-        if (navigator.requestMIDIAccess) {
-            console.log('This browser supports WebMIDI!');
-        } else {
-            console.log('WebMIDI is not supported in this browser.');
+        function showTutorial(){
+            overlayElement.classList.add("visible");
+            $("#overlayBackground").slideDown(10);
+            overlayElement.removeAttribute("hidden");
+            tutorialElement.style.display = "block";
+        }
+
+        function showSettings(){
+            overlayElement.classList.add("visible");
+            $("#overlayBackground").slideDown(10);
+            overlayElement.removeAttribute("hidden");
+            settingsElement.style.display = "block"
+        }
+
+        function hideBg(){
+            $("#overlayBackground").fadeOut("fast");
+            endscreenElement.style.display = "none"
+            settingsElement.style.display = "none";
+            tutorialElement.style.display = "none";
         }
     </script>
 </body>

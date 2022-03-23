@@ -37,6 +37,19 @@ const pianoSynth = new Tone.Sampler({
 	baseUrl: "https://tonejs.github.io/audio/salamander/"
 }).toDestination();
 
+const epianoSynth = new Tone.Sampler({
+	urls: {
+		A1: "A1.mp3",
+		A2: "A2.mp3",
+	},
+	baseUrl: "https://tonejs.github.io/audio/casio/"
+}).toDestination();
+
+let instruments = [pianoSynth, epianoSynth];
+
+let melodyInstrument = pianoSynth;
+let chordsInstrument = pianoSynth;
+
 var audioContextStarted = false;
 
 function checkStartAudioContext(){
@@ -52,17 +65,26 @@ function checkStartAudioContext(){
 let toneMelody = null;
 let toneChords = [];
 
+function inverseLerpClamped(min, max, x){
+	let clamped = Math.min(Math.max(x, min), max);
+	return (x - min) / (max - min);
+}
+
+function smoothstep(x) {
+	return x * x * x * (x * (x * 6 - 15) + 10);
+}
+
 function playToneTest(sequence, mutePart = false){
 	Tone.Transport.clear();
 	Tone.Transport.stop();
 	Tone.Transport.seconds = 0;
-	Tone.Transport.swing = sequence.swing ? 0.3 : 0.0;
+	Tone.Transport.swing = sequence.swing ? 0.5 - (smoothstep(inverseLerpClamped(100, 200, sequence.tempo)) * 0.2) : 0.0;
 
 	if(checkStartAudioContext()){
 		let notes = sequence.toToneArray();
 
 		const part = new Tone.Part(function(time, obj){
-			pianoSynth.triggerAttackRelease(obj.note, obj.duration, time);
+			melodyInstrument.triggerAttackRelease(obj.note, obj.duration, time);
 		}, notes).start(0);
 
 		toneMelody = part;
@@ -74,7 +96,7 @@ function playToneTest(sequence, mutePart = false){
 			console.log(notes.toString() + ", " + start)
 
 			const chordEvent = new Tone.ToneEvent(function(time, chord){
-				pianoSynth.triggerAttackRelease(chord, "1m", time);
+				chordsInstrument.triggerAttackRelease(chord, "1m", time);
 			}, notes);
 
 			chordEvent.start(start);

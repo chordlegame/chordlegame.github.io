@@ -96,7 +96,7 @@ const matchColors = {
     3: '#c98447' //orange
 }
 
-function drawSVGWithColor(element, measurenum, beatsnum, seq, colors, contentwidth = 500){
+function drawSVGWithColor(element, measurenum, beatsnum, seq, colors, targetWidth = 500){
     var measureNum = measurenum;
     var beatsNum = measureNum * beatsnum;
     var beatspM = beatsnum;
@@ -106,9 +106,12 @@ function drawSVGWithColor(element, measurenum, beatsnum, seq, colors, contentwid
         div.removeChild(div.firstChild);
     var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
 
+    var sc = Math.min(targetWidth, $(window).width()) / 500;
+    var width = targetWidth * sc, height = 85 * sc, yoffset = -15 * sc;
+
     // Size our SVG:
-    renderer.resize(contentwidth, 85);
-    var stave = new VF.Stave(25, -15, contentwidth - 50, {fill_style : 'white'});
+    renderer.resize(width, height);
+    var stave = new VF.Stave(25, yoffset, width - (50 * sc), {fill_style : 'white', spacing_between_lines_px: Math.floor(10 * sc)});
 
     var context = renderer.getContext();
 

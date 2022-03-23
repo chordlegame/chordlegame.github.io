@@ -47,6 +47,7 @@ class Game {
         this.inputLength = 0;
         this.currentLength = 0;
         this.dotted = false;
+        this.playing = true;
 
         this.baselineSequence = base;
 
@@ -79,11 +80,13 @@ class Game {
             drawSVGWithColor("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence, matches);
 
             if(win){
+                this.playing = false;
                 this.Win();
                 return;
             }
 
             if(this.currentattempt == 5){
+                this.playing = false;
                 this.Lose();
                 return;
             }
@@ -127,6 +130,7 @@ class Game {
     }
 
     pushNote(note){
+        if(!this.playing) return;
         let duration = this.inputLength + (this.dotted ? this.inputLength/2 : 0);
 
         if((duration + this.currentLength) > (this.activeSequence.measures * this.activeSequence.beatsPerMeasure * 2)) {
@@ -141,6 +145,7 @@ class Game {
     }
 
     pushRest(){
+        if(!this.playing) return;
         let duration = this.inputLength + (this.dotted ? this.inputLength/2 : 0);
 
         if((duration + this.currentLength) > (this.activeSequence.measures * this.activeSequence.beatsPerMeasure * 2)) {
@@ -155,6 +160,7 @@ class Game {
     }
 
     deleteNote(){
+        if(!this.playing) return;
         this.currentLength -= this.activeSequence.deleteLast();
 
         drawSVG("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence);
