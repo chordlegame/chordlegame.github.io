@@ -56,6 +56,7 @@ function playToneTest(sequence, mutePart = false){
 	Tone.Transport.clear();
 	Tone.Transport.stop();
 	Tone.Transport.seconds = 0;
+	Tone.Transport.swing = sequence.swing ? 0.3 : 0.0;
 
 	if(checkStartAudioContext()){
 		let notes = sequence.toToneArray();
