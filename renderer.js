@@ -24,8 +24,6 @@ function drawSVG(element, measurenum, beatsnum, seq = null, targetWidth = 500){
     renderer.resize(width, height);
     var stave = new VF.Stave(25, yoffset, width - (50 * sc), {fill_style : 'white', spacing_between_lines_px: Math.floor(10 * sc)});
 
-    console.log("spaceing = " + stave.getSpacingBetweenLines())
-
     var context = renderer.getContext();
 
     stave.setContext(context).draw();
@@ -35,6 +33,7 @@ function drawSVG(element, measurenum, beatsnum, seq = null, targetWidth = 500){
 
     var notes = [];
     var tuples = [];
+    var ties = [];
 
     var eigthPointer = 0;
 
@@ -46,8 +45,21 @@ function drawSVG(element, measurenum, beatsnum, seq = null, targetWidth = 500){
         for(var elem of seq.notes){
             // @ts-ignore
             if(elem instanceof Note){
-                // @ts-ignore
-                notes.push(elem.toVFNote());
+                let toNextBreak = 8 - (eigthPointer % 8);
+                if (elem.duration > toNextBreak){
+                    let dir0 = durationStrings[toNextBreak] != null ? toNextBreak : toNextBreak + 1;
+                    let dir1 = durationStrings[elem.duration - toNextBreak] != null ? elem.duration - toNextBreak : elem.duration - toNextBreak + 1;
+                    let note0 = new Note(elem.note, dir0).toVFNote();
+                    let note1 = new Note(elem.note, dir1).toVFNote();
+                    
+                    notes.push(note0);
+                    notes.push(new VF.BarNote());
+                    notes.push(note1);
+                    ties.push(new VF.StaveTie({first_note: note0, last_note: note1, first_indices: [0], last_indices: [0]}));
+                }
+                else {
+                    notes.push(elem.toVFNote());
+                }
             }
             // @ts-ignore
             else if (elem instanceof Triplet){
@@ -70,20 +82,23 @@ function drawSVG(element, measurenum, beatsnum, seq = null, targetWidth = 500){
     }
 
     while(eigthPointer < (beatsNum * 2)){
-        if(eigthPointer % 8 == 0 && eigthPointer != 0){
-            notes.push(new VF.BarNote());
-        }
-        let maxlength = (beatsNum * 2 - eigthPointer);
-        if(maxlength > 4) maxlength = 4;
+        let maxlength = ((beatsNum * 2) - eigthPointer) % 8;
+        if(maxlength > 4 || maxlength == 0) maxlength = 4;
         let duration = durationStrings[maxlength];
         notes.push(new VF.GhostNote({duration: duration}));
         eigthPointer += maxlength;
+
+        if(eigthPointer % 8 == 0 && eigthPointer < beatsNum * 2){
+            notes.push(new VF.BarNote());
+        }
     }
 
     var beams = VF.Beam.generateBeams(notes);
 
     VF.Formatter.FormatAndDraw(context, stave, notes);
 
+    ties.forEach(function(t) {t.setContext(context).draw()});
+    
     beams.forEach(function(beam) {
         beam.setContext(context).draw();
     });
@@ -122,6 +137,7 @@ function drawSVGWithColor(element, measurenum, beatsnum, seq, colors, targetWidt
 
     var notes = [];
     var tuples = [];
+    var ties = [];
 
     var eigthPointer = 0;
 
@@ -133,8 +149,21 @@ function drawSVGWithColor(element, measurenum, beatsnum, seq, colors, targetWidt
         for(var elem of seq.notes){
             // @ts-ignore
             if(elem instanceof Note){
-                // @ts-ignore
-                notes.push(elem.toVFNote());
+                let toNextBreak = ((7 - eigthPointer) % 8) + 1;
+                if (elem.duration > toNextBreak){
+                    let dir0 = durationStrings[toNextBreak] != null ? toNextBreak : toNextBreak + 1;
+                    let dir1 = durationStrings[elem.duration - toNextBreak] != null ? elem.duration - toNextBreak : elem.duration - toNextBreak + 1;
+                    let note0 = new Note(elem.note, dir0).toVFNote();
+                    let note1 = new Note(elem.note, dir1).toVFNote();
+                    
+                    notes.push(note0);
+                    notes.push(new VF.BarNote());
+                    notes.push(note1);
+                    ties.push(new VF.StaveTie({first_note: note0, last_note: note1, first_indices: [0], last_indices: [0]}));
+                }
+                else {
+                    notes.push(elem.toVFNote());
+                }
             }
             // @ts-ignore
             else if (elem instanceof Triplet){
@@ -167,8 +196,6 @@ function drawSVGWithColor(element, measurenum, beatsnum, seq, colors, targetWidt
         eigthPointer += maxlength;
     }
 
-    
-
     let indexOfColor = 0;
     notes.forEach(function(note){
         if(!(note instanceof VF.StaveNote)) return;
@@ -178,13 +205,14 @@ function drawSVGWithColor(element, measurenum, beatsnum, seq, colors, targetWidt
         let col = matchColors[colors[indexOfColor]];
 
         note.setStyle({fillStyle: col, strokeStyle: col});
-        indexOfColor++;
+        if(!ties.map(t => t.first_note == note).includes(true)) indexOfColor++;
     });
 
     var beams = VF.Beam.generateBeams(notes);
 
     VF.Formatter.FormatAndDraw(context, stave, notes);
 
+    ties.forEach(function(t) {t.setContext(context).draw()})
     beams.forEach(function(beam) {
         beam.setContext(context).draw();
     });

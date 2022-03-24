@@ -144,29 +144,29 @@
                 <button class="piano-button-above" id="pbe" onclick="game.advanceSequence()">⏎</button>
             </div>
             <div style="margin-bottom:20px;">
-                <button class="piano-button" id="pbl8" onclick="game.changeLength(8)">𝅝</button>
-                <button class="piano-button" id="pbl4" onclick="game.changeLength(4)">𝅗𝅥</button>
-                <button class="piano-button" id="pbl2" onclick="game.changeLength(2)">𝅘𝅥</button>
-                <button class="piano-button" id="pbl1" onclick="game.changeLength(1)">𝅘𝅥𝅮</button>
-                <button class="piano-button" id="pbl0" onclick="game.changeLength(0)">𝅘𝅥𝅰</button>
-                <button class="piano-button" id="pbdot" onclick="game.toggleDot()">•</button>
-                <button class="piano-button" id="pbup" onclick="game.toggleOctave()">^</button>
-                <button class="piano-button" id="pbr" onclick="game.pushRest()">𝄽</button>
+                <button class="piano-button" id="pbl8"  onclick="game.changeLength(8)"><div>𝅝</div><keytext>1</keytext></button>
+                <button class="piano-button" id="pbl4"  onclick="game.changeLength(4)"><div>𝅗𝅥</div><keytext>2</keytext></button>
+                <button class="piano-button" id="pbl2"  onclick="game.changeLength(2)"><div>𝅘𝅥</div><keytext>3</keytext></button>
+                <button class="piano-button" id="pbl1"  onclick="game.changeLength(1)"><div>𝅘𝅥𝅮</div><keytext>4</keytext></button>
+                <button class="piano-button" id="pbl0"  onclick="game.changeLength(0)"><div>𝅘𝅥𝅰</div><keytext>5</keytext></button>
+                <button class="piano-button" id="pbdot" onclick="game.toggleDot()"    ><div>•</div><keytext>6</keytext></button>
+                <button class="piano-button" id="pbup"  onclick="game.toggleOctave()" ><div>^</div><keytext>7</keytext></button>
+                <button class="piano-button" id="pbr"   onclick="game.pushRest()"     ><div>𝄽</div><keytext>8</keytext></button>
             </div>
         </div>
         <div class="keys">
-            <div class="key"        onclick="game.pushNote( 0)"></div>
-            <div class="key black"  onclick="game.pushNote( 1)"></div>
-            <div class="key"        onclick="game.pushNote( 2)"></div>
-            <div class="key black"  onclick="game.pushNote( 3)"></div>
-            <div class="key"        onclick="game.pushNote( 4)"></div>
-            <div class="key"        onclick="game.pushNote( 5)"></div>
-            <div class="key black"  onclick="game.pushNote( 6)"></div>
-            <div class="key"        onclick="game.pushNote( 7)"></div>
-            <div class="key black"  onclick="game.pushNote( 8)"></div>
-            <div class="key"        onclick="game.pushNote( 9)"></div>
-            <div class="key black"  onclick="game.pushNote(10)"></div>
-            <div class="key"        onclick="game.pushNote(11)"></div>
+            <div class="key"        onclick="game.pushNote( 0)"><keytext>z</keytext></div>
+            <div class="key black"  onclick="game.pushNote( 1)"><bkeytxt>s</bkeytxt></div>
+            <div class="key"        onclick="game.pushNote( 2)"><keytext>x</keytext></div>
+            <div class="key black"  onclick="game.pushNote( 3)"><bkeytxt>d</bkeytxt></div>
+            <div class="key"        onclick="game.pushNote( 4)"><keytext>c</keytext></div>
+            <div class="key"        onclick="game.pushNote( 5)"><keytext>v</keytext></div>
+            <div class="key black"  onclick="game.pushNote( 6)"><bkeytxt>g</bkeytxt></div>
+            <div class="key"        onclick="game.pushNote( 7)"><keytext>b</keytext></div>
+            <div class="key black"  onclick="game.pushNote( 8)"><bkeytxt>h</bkeytxt></div>
+            <div class="key"        onclick="game.pushNote( 9)"><keytext>n</keytext></div>
+            <div class="key black"  onclick="game.pushNote(10)"><bkeytxt>j</bkeytxt></div>
+            <div class="key"        onclick="game.pushNote(11)"><keytext>m</keytext></div>
         </div>
     </div>
     <script>
@@ -224,6 +224,27 @@
                 case 13: 
                     game.advanceSequence(); 
                     break;
+                case 90: game.pushNote( 0); break; //z
+                case 83: game.pushNote( 1); break; //s
+                case 88: game.pushNote( 2); break; //x
+                case 68: game.pushNote( 3); break; //d 
+                case 67: game.pushNote( 4); break; //c
+                case 86: game.pushNote( 5); break; //v
+                case 71: game.pushNote( 6); break; //g
+                case 66: game.pushNote( 7); break; //b
+                case 72: game.pushNote( 8); break; //h
+                case 78: game.pushNote( 9); break; //n
+                case 74: game.pushNote(10); break; //j
+                case 77: game.pushNote(11); break; //m
+                
+                case 49: game.changeLength(8); break;
+                case 50: game.changeLength(4); break;
+                case 51: game.changeLength(2); break;
+                case 52: game.changeLength(1); break;
+                case 53: game.changeLength(0); break;
+                case 54: game.toggleDot(); break;
+                case 55: game.toggleOctave(); break;
+                case 56: game.pushRest(); break;
             }
         }
 

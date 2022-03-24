@@ -360,7 +360,7 @@ class Note extends StaffElement {
     }
 
     toVFNote(triplet : boolean = false) : sNote {
-        let noteName : string = noteStrings[this.note % 12] + "/" + (this.note/12).toString();
+        let noteName : string = noteStrings[this.note % 12] + "/" + Math.floor(this.note/12).toString();
         let duration : string = durationStrings[this.duration];
         let stavenote = new VF.StaveNote({clef: "treble", keys: [noteName], duration: duration });
         if(noteName.length > 1){

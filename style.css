@@ -42,6 +42,38 @@ p {
     margin: 0;
 }
 
+keytext{
+    display: none;
+}
+
+bkeytxt {
+    display: none;
+}
+
+@media(min-width:690px){
+    keytext {
+        display: block;
+        position: absolute;
+        bottom: 5px;
+        right: 3px;
+        line-height:normal;
+        font-size: small;
+        font-weight: 900;
+    }
+    
+    bkeytxt {
+        display: block;
+        position: absolute;
+        bottom: 105px;
+        right: -20px;
+        line-height:normal;
+        font-size: small;
+        font-weight: 900;
+        color:#fff;
+        z-index: 2;
+    }
+}
+
 .icon {
     padding-top: 0.5rem;
 }
@@ -105,18 +137,23 @@ p {
     margin: 0 2px 2px 0;
     padding: 0%;
     background: #fff;
+    color:#000;
     border-radius: 0 0 4px 4px;
 }
+
 .key.pressed,
 .key:active {
     background: #f4f3f3;
     box-shadow: inset 3px 2px 3px #999, inset -3px 2px 3px #999;
 }
+
 .key.black {
     width: 0;
     margin: 0;
     z-index: 2;
+    position: relative;
 }
+
 .key.black:after {
     content: "";
     position: absolute;
@@ -128,6 +165,7 @@ p {
     background: #000;
     border-radius: 0 0 4px 4px;
     box-shadow: 1px 1px 0 #555, 2px 2px 0 #555;
+    color:#fff;
 }
 
 .key.black.pressed:after,
@@ -157,18 +195,9 @@ p {
     z-index: 0;
 }
 
-.piano-button-above:active {
-    background-color: #999;
-}
-
-.piano-button-above-pressed {
-    background-color: #999;
-}
-
-.piano-button:active {
-    background-color: #999;
-}
-
+.piano-button-above:active,
+.piano-button-above-pressed,
+.piano-button:active,
 .piano-button-pressed {
     background-color: #999;
 }
