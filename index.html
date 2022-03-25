@@ -23,7 +23,7 @@
             return Math.floor((treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay);
         }
 
-        const chordleNumber = Math.max(daysBetween(new Date("3/25/2022"), new Date()), 0);
+        const chordleNumber = Math.max(daysBetween(new Date("3/24/2022"), new Date()), 0);
     </script>
 
     <div id="overlayBackground" hidden>
@@ -66,25 +66,28 @@
             <p style="padding-top: 2rem; padding-left: 0.5rem; text-align: left; font-size: small;">Chordle is like wordle, but for music theory! 
                 Despite the name, chordle is more about the melody than the chords. Guess the melody in 6 tries. 
                 <br> <br> To listen to the melody, click on the play button. You can listen to just the chords underneath with the chord play button. You can input notes of the currently selected duration with the piano. 
-                <br> <br> There are special rules for chordle for what colors notes are. After submitting a response, your submission will be colored based on how correct it is.
+                <br> <br> There are special rules in chordle for what colors notes are. After submitting a response, your submission will be colored based on how correct it is.
                 <br> <br> Grey means that there isn't a note there. To fix it, make it a rest, or extend a note before it.
             </p>
             <img src="res/images/grey1.png" alt="Incorrect" height="100px">
             <img src="res/images/grey2.png" alt="Correct" height="100px">
-            <p style="padding-top: 2rem; padding-left: 0.5rem; text-align: left; font-size: small;">
+            <p style="padding-top: 1rem; padding-left: 0.5rem; text-align: left; font-size: small;">
                 If a note is orange, it is covering another note. Make it shorter to fix.
             </p>
             <img src="res/images/orange.png" alt="Incorrect" height="100px">
             <img src="res/images/green.png" alt="Correct" height="100px">
-            <p style="padding-top: 2rem; padding-left: 0.5rem; text-align: left; font-size: small;">
-                If a note is yellow, it is in the right place but has the wrong rhythm.
+            <p style="padding-top: 1rem; padding-left: 0.5rem; text-align: left; font-size: small;">
+                If a note is yellow, it is in the right place but is the wrong note.
             </p>
             <img src="res/images/yellow.png" alt="Incorrect" height="100px">
+            <p style="text-align: center; font-size: xx-large; font-weight: 600;">
+                Good luck!!!
+            </p>
             
             <div id="basesheet" class="staff"></div>
         </div>
         <div id="settingsscreen" class="endingScreen" style="display:none;">
-            <h2 style="padding-top: 2rem;">SETTINGS</h2>
+            <h2 style="padding-top: 2rem; padding-bottom: 2rem;">SETTINGS</h2>
             <form action="#">
                 <label for="melody-instrument">Melody Instrument</label>
                 <select name="melody-instrument" onchange="melodyInstrument = instruments[this.selectedIndex]">
@@ -133,8 +136,8 @@
     <div id="piano-keyboard">
         <div class="piano-buttons" style="display: block; justify-content: center;">
             <div id="upperButtons" style="margin-left: 5.65%; margin-right: -5.65%; margin-bottom: -14px;">
-                <button class="piano-button-above" onclick="playToneTest(game.baselineSequence)">▶</button>
-                <button class="piano-button-above" onclick="playToneTest(game.baselineSequence, true)">c</button>
+                <button class="piano-button-above" onclick="playToneTest(game.baselineSequence)"><div>▶</div><keytext>⍽</keytext></button>
+                <button class="piano-button-above" onclick="playToneTest(game.baselineSequence, true)"><div>c</div></button>
                 
                 <button class="piano-button-above" style="visibility: hidden;"></button>
                 <button class="piano-button-above" style="visibility: hidden;"></button>
@@ -224,6 +227,7 @@
                 case 13: 
                     game.advanceSequence(); 
                     break;
+                //piano keys
                 case 90: game.pushNote( 0); break; //z
                 case 83: game.pushNote( 1); break; //s
                 case 88: game.pushNote( 2); break; //x
@@ -237,14 +241,17 @@
                 case 74: game.pushNote(10); break; //j
                 case 77: game.pushNote(11); break; //m
                 
-                case 49: game.changeLength(8); break;
-                case 50: game.changeLength(4); break;
-                case 51: game.changeLength(2); break;
-                case 52: game.changeLength(1); break;
-                case 53: game.changeLength(0); break;
+                //numbers
+                case 49: game.changeLength(8); break; //0
+                case 50: game.changeLength(4); break; //1
+                case 51: game.changeLength(2); break; //2
+                case 52: game.changeLength(1); break; //3
+                case 53: game.changeLength(0); break; //4
                 case 54: game.toggleDot(); break;
                 case 55: game.toggleOctave(); break;
                 case 56: game.pushRest(); break;
+
+                case 32: playToneTest(game.baselineSequence); break; //space
             }
         }
 

@@ -87,9 +87,11 @@ function extractNote(input : string) : [number, number] {
     let note = noteNumbers[input.charAt(0).toLowerCase()];
     let offset = 2;
 
-    if(input.charAt[1] == 's' || input.charAt[1] == '#') note++;
-    else if (input.charAt[1] == 'b') note--;
+    if(input.charAt(1) == 's' || input.charAt(1) == '#') note++;
+    else if (input.charAt(1) == 'b') note--;
     else offset = 1;
+
+    //console.log(input + ", note: " + note + ", offset: " + offset + ", charAt: " + input.charAt(1))
 
     return [note, offset];
 }
@@ -105,11 +107,11 @@ class Chord{
 
         let [root, charoffset] = extractNote(inputstr);
 
-        console.log(charoffset);
+        //console.log(charoffset);
 
         root += 12 * 2;
 
-        console.log(root);
+        //console.log(root);
         
         chordTypes.forEach(e => {
             e.suffixes.forEach(suffix => {
@@ -136,7 +138,7 @@ class Chord{
 
 function sequenceFromFile(sequences : string, index : number = 0) {
     let inputstrings : string[] = sequences.split(";");
-    console.log(inputstrings[0])
+    //console.log(inputstrings[0])
     let seq = sequenceFromString(inputstrings[index]);
     return seq;
 }
@@ -232,7 +234,7 @@ export class sequence{
     }
 
     pushChord(chord : string, duration : number){
-        console.log(chord + "," + duration)
+        //console.log(chord + "," + duration)
         this.chords.push(new Chord(chord, duration));
     }
 
@@ -252,10 +254,10 @@ export class sequence{
 
         for(var note of this.notes){
             let [element, beat] = comparor.getElementAt8thNoteBeat(eigthPointer);
-            console.log(beat + ", " + eigthPointer);
+            //console.log(beat + ", " + eigthPointer);
             if(beat == eigthPointer){
                 if(typeof element != typeof note) {
-                    console.log("different element at beat" + beat);
+                    //console.log("different element at beat" + beat);
                     if(note instanceof Triplet) arr.push(0, 0, 0);
                     else arr.push(0);
                     win = false;
@@ -330,7 +332,7 @@ export class sequence{
                 let start : string = toToneTimeString(eigthPointer);
                 let note : string = noteStrings[n.note % 12] + (Math.floor(n.note/12) + 1);
                 let obj = {time: start, note: note, duration: n.duration};
-                console.log(obj);
+                //console.log(obj);
                 notes.push(obj);
             }
             else if(n instanceof Triplet) {

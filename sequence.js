@@ -91,12 +91,13 @@ var chordTypes = [
 function extractNote(input) {
     var note = noteNumbers[input.charAt(0).toLowerCase()];
     var offset = 2;
-    if (input.charAt[1] == 's' || input.charAt[1] == '#')
+    if (input.charAt(1) == 's' || input.charAt(1) == '#')
         note++;
-    else if (input.charAt[1] == 'b')
+    else if (input.charAt(1) == 'b')
         note--;
     else
         offset = 1;
+    //console.log(input + ", note: " + note + ", offset: " + offset + ", charAt: " + input.charAt(1))
     return [note, offset];
 }
 var Chord = /** @class */ (function () {
@@ -105,9 +106,9 @@ var Chord = /** @class */ (function () {
         this.name = inputstr;
         this.duration = duration;
         var _a = extractNote(inputstr), root = _a[0], charoffset = _a[1];
-        console.log(charoffset);
+        //console.log(charoffset);
         root += 12 * 2;
-        console.log(root);
+        //console.log(root);
         chordTypes.forEach(function (e) {
             e.suffixes.forEach(function (suffix) {
                 if (inputstr.substring(charoffset) === suffix) {
@@ -131,7 +132,7 @@ var Chord = /** @class */ (function () {
 function sequenceFromFile(sequences, index) {
     if (index === void 0) { index = 0; }
     var inputstrings = sequences.split(";");
-    console.log(inputstrings[0]);
+    //console.log(inputstrings[0])
     var seq = sequenceFromString(inputstrings[index]);
     return seq;
 }
@@ -216,7 +217,7 @@ var sequence = /** @class */ (function () {
         return this.notes.pop().duration;
     };
     sequence.prototype.pushChord = function (chord, duration) {
-        console.log(chord + "," + duration);
+        //console.log(chord + "," + duration)
         this.chords.push(new Chord(chord, duration));
     };
     /*
@@ -236,10 +237,10 @@ var sequence = /** @class */ (function () {
         for (var _i = 0, _a = this.notes; _i < _a.length; _i++) {
             var note = _a[_i];
             var _b = comparor.getElementAt8thNoteBeat(eigthPointer), element = _b[0], beat = _b[1];
-            console.log(beat + ", " + eigthPointer);
+            //console.log(beat + ", " + eigthPointer);
             if (beat == eigthPointer) {
                 if (typeof element != typeof note) {
-                    console.log("different element at beat" + beat);
+                    //console.log("different element at beat" + beat);
                     if (note instanceof Triplet)
                         arr.push(0, 0, 0);
                     else
@@ -306,9 +307,9 @@ var sequence = /** @class */ (function () {
             if (n instanceof Rest) { }
             else if (n instanceof Note) {
                 var start = toToneTimeString(eigthPointer);
-                var note = noteStrings[n.note % 12] + Math.floor(n.note / 12);
+                var note = noteStrings[n.note % 12] + (Math.floor(n.note / 12) + 1);
                 var obj = { time: start, note: note, duration: n.duration };
-                console.log(obj);
+                //console.log(obj);
                 notes.push(obj);
             }
             else if (n instanceof Triplet) {
@@ -335,7 +336,7 @@ var Note = /** @class */ (function (_super) {
     }
     Note.prototype.toVFNote = function (triplet) {
         if (triplet === void 0) { triplet = false; }
-        var noteName = noteStrings[this.note % 12] + "/" + (this.note / 12).toString();
+        var noteName = noteStrings[this.note % 12] + "/" + Math.floor(this.note / 12).toString();
         var duration = durationStrings[this.duration];
         var stavenote = new VF.StaveNote({ clef: "treble", keys: [noteName], duration: duration });
         if (noteName.length > 1) {
