@@ -90,14 +90,14 @@
             <h2 style="padding-top: 2rem; padding-bottom: 2rem;">SETTINGS</h2>
             <form action="#">
                 <label for="melody-instrument">Melody Instrument</label>
-                <select name="melody-instrument" onchange="melodyInstrument = instruments[this.selectedIndex]">
+                <select id="mlsel" name="melody-instrument" onchange="melodyInstrument = instruments[this.selectedIndex]; window.localStorage.setItem('melodyInstrument', this.selectedIndex);">
                     <option value="0">Piano</option>
                     <option value="1">ePiano</option>
                 </select>
             </form>
             <form action="#">
                 <label for="chords-instrument">Chords Instrument</label>
-                <select name="chords-instrument" onchange="chordsInstrument = instruments[this.selectedIndex];">
+                <select id="chsel" name="chords-instrument" onchange="chordsInstrument = instruments[this.selectedIndex]; window.localStorage.setItem('chordInstrument', this.selectedIndex);">
                     <option value="0">Piano</option>
                     <option value="1">ePiano</option>
                 </select>
@@ -190,6 +190,26 @@
         let endscreenText = document.getElementById("endscreenText");
         let tutorialElement = document.getElementById("tutorialscreen");
         let settingsElement = document.getElementById("settingsscreen");
+
+        //loading
+        {
+            let ml = window.localStorage.getItem('melodyInstrument');
+            let ch = window.localStorage.getItem('chordInstrument');
+            if(ml != null){
+                melodyInstrument = instruments[ml];
+                document.getElementById("mlsel").selectedIndex = ml;
+            }
+            else {
+                window.localStorage.setItem('melodyInstrument', 0);
+            }
+            if(ch != null){
+                melodyInstrument = instruments[ch];
+                document.getElementById("chsel").selectedIndex = ch;
+            }
+            else {
+                window.localStorage.setItem('chordInstrument', 0);
+            }
+        }
 
         game.Win = function(){
             overlayElement.classList.add("visible");
