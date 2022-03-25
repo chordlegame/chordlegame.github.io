@@ -20,7 +20,7 @@ const pianoSynth = new Tone.Sampler({
 		"F#4": "Fs4.mp3",
 		A4: "A4.mp3",
 		C5: "C5.mp3",
-		"D#5": "Ds5.mp3",
+		"D#5": "Ds5.mp3",	
 		"F#5": "Fs5.mp3",
 		A5: "A5.mp3",
 		C6: "C6.mp3",
@@ -37,7 +37,7 @@ const pianoSynth = new Tone.Sampler({
 	baseUrl: "https://tonejs.github.io/audio/salamander/"
 }).toDestination();
 
-const epianoSynth = new Tone.Sampler({
+const epianoSynth1 = new Tone.Sampler({
 	urls: {
 		A1: "A1.mp3",
 		A2: "A2.mp3",
@@ -45,7 +45,7 @@ const epianoSynth = new Tone.Sampler({
 	baseUrl: "https://tonejs.github.io/audio/casio/"
 }).toDestination();
 
-let instruments = [pianoSynth, epianoSynth];
+let instruments = [pianoSynth, epianoSynth1];
 
 let melodyInstrument = pianoSynth;
 let chordsInstrument = pianoSynth;
