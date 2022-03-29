@@ -82,6 +82,7 @@ function playToneTest(sequence, mutePart = false){
 
 	if(checkStartAudioContext()){
 		let notes = sequence.toToneArray();
+		console.log(notes);
 
 		const part = new Tone.Part(function(time, obj){
 			melodyInstrument.triggerAttackRelease(obj.note, obj.duration, time);

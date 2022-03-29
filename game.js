@@ -42,12 +42,14 @@ class Game {
     /**
      * @param {sequence} base 
      */
-    constructor(base){
+    constructor(base, debuggame = false){
+        this.debug = debuggame;
         this.currentattempt = -1;
-        this.inputLength = 0;
+        this.inputLength = 2;
         this.currentLength = 0;
         this.dotted = false;
         this.playing = true;
+        this.currentTuple = null;
 
         this.baselineSequence = base;
 
@@ -69,6 +71,8 @@ class Game {
         drawSVG("sheet4", 2, 4, this.rows[0].sequence);
         drawSVG("sheet5", 2, 4, this.rows[0].sequence);
 
+        if (this.debug) { drawSVG("sheet5", 2, 4, this.baselineSequence); }
+
         this.advanceSequence();
     }
 
@@ -77,7 +81,7 @@ class Game {
             let [matches, win] = this.rows[this.currentattempt].sequence.compare(this.baselineSequence);
             this.rows[this.currentattempt].matches = matches;
 
-            drawSVGWithColor("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence, matches);
+            drawSVG("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence, matches);
 
             if(win){
                 this.playing = false;
@@ -129,8 +133,36 @@ class Game {
         else document.getElementById("pbdot").classList.remove('piano-button-pressed')
     }
 
+    startTuple(){
+        if(this.currentTuple != null){
+            this.currentTuple = null;
+            document.getElementById("pbtr").classList.remove('piano-button-pressed')
+        }
+        else {
+            this.currentTuple = [];
+            document.getElementById("pbtr").classList.add('piano-button-pressed')
+        }
+    }
+
+    pushToTuple(i){
+        this.currentTuple.push(i);
+        if(this.currentTuple.length == 3) {
+            this.activeSequence.pushTuple(
+                this.currentTuple[0],this.currentTuple[1],this.currentTuple[2], 
+                this.inputLength + (this.dotted ? this.inputLength/2 : 0)
+            );
+            this.currentTuple = null;
+            document.getElementById("pbtr").classList.remove('piano-button-pressed')
+            drawSVG("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence);
+        }
+    }
+
     pushNote(note){
         if(!this.playing) return;
+        if(this.currentTuple != null) {
+            this.pushToTuple(note + (this.octave ? 5*12 : 4*12));
+            return;
+        }
         let duration = this.inputLength + (this.dotted ? this.inputLength/2 : 0);
 
         if((duration + this.currentLength) > (this.activeSequence.measures * this.activeSequence.beatsPerMeasure * 2)) {
@@ -161,6 +193,13 @@ class Game {
 
     deleteNote(){
         if(!this.playing) return;
+
+        if(this.currentTuple != null){
+            this.currentTuple = null;
+            document.getElementById("pbtr").classList.remove('piano-button-pressed')
+            return;
+        }
+
         this.currentLength -= this.activeSequence.deleteLast();
 
         drawSVG("sheet" + this.currentattempt.toString(), 0, 0, this.activeSequence);

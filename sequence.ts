@@ -46,11 +46,21 @@ const toneDurationStrings = {
 }
 
 function toToneTimeString(time : number) : string {
+    let [measure, quarter, eighth] = toToneTimeNumber(time);
+
+    return measure + ":" + quarter + ":" + eighth;
+}
+
+function toTimeString(timestruct : [number, number, number]){
+    return timestruct[0] + ":" + timestruct[1] + ":" + timestruct[2];
+}
+
+function toToneTimeNumber(time : number) : [number, number, number] {
     let measure = Math.floor(time / 8);
     let quarter = Math.floor((time % 8) / 2);
     let eighth = (time % 2) * 2;
 
-    return measure + ":" + quarter + ":" + eighth;
+    return [measure, quarter, eighth];
 }
 
 class ChordType {
@@ -169,7 +179,7 @@ function sequenceFromString(seqString : string) : sequence {
                 }
                 break;
             case "melody":
-                processMelody(tokens.splice(1), seq);
+                processMelody(line.substring(tokens[0].length + 1), seq);
                 break;
         }
     }
@@ -177,23 +187,40 @@ function sequenceFromString(seqString : string) : sequence {
     return seq;
 }
 
-function processMelody(tokens : string[], seq : sequence) {
+function processMelody(source : string, seq : sequence) {
+    const splitreg =  / (?![^\[]*\])/;
+    let tokens = source.split(splitreg, -1);
+    console.log(tokens);
+
     for(let index = 0; index < tokens.length; index++){
         let notestr : string = tokens[index];
         let duration = 1;
 
-        while(tokens[index + 1] === '#') {
-            duration++;
-            index++;
-        }
-
-        if(notestr === '-') {
-            seq.pushRest(duration);
+        if(notestr.charAt(0) === '3'){
+            let clean = notestr.substring(notestr.indexOf('[') + 1, notestr.indexOf(']'));
+            let trtokens = clean.split(" ");
+            let notes : number[] = [];
+            for(let i = 0; i < 3; i++){
+                let [notenum, charoffset] = extractNote(trtokens[i]);
+                let octave : number = +trtokens[i].substring(charoffset);
+                notes.push(notenum + (octave * 12)); 
+            }
+            seq.pushTuple(notes[0], notes[1], notes[2], duration);
         }
         else {
-            let [notenum, charoffset] = extractNote(notestr);
-            let octave : number = +notestr.substring(charoffset);
-            seq.pushNote(notenum + (octave * 12), duration);
+            while(tokens[index + 1] === '#') {
+                duration++;
+                index++;
+            }
+    
+            if(notestr === '-') {
+                seq.pushRest(duration);
+            }
+            else {
+                let [notenum, charoffset] = extractNote(notestr);
+                let octave : number = +notestr.substring(charoffset);
+                seq.pushNote(notenum + (octave * 12), duration);
+            }
         }
     }
 }
@@ -243,7 +270,7 @@ export class sequence{
     0: grey
     1: green
     2: light yellow
-    3: dark yellow
+    3: orange
     */
     //returns an array of integers analagous to the object being enacted upon, win
     compare(comparor : sequence) : [number[], boolean] {
@@ -291,6 +318,12 @@ export class sequence{
                     if(element.duration != note.duration){
                         arr.push(0,0,0);
                     }
+                    let isgreen = (n0 : number, n1 : number) => { return n0 == n1 ? 1 : 2; };
+                    arr.push(
+                        isgreen(element.note0.note, (note as Triplet).note0.note),
+                        isgreen(element.note1.note, (note as Triplet).note1.note),
+                        isgreen(element.note2.note, (note as Triplet).note2.note),
+                    );
                 }
             }
             else{
@@ -324,19 +357,30 @@ export class sequence{
 
     toToneArray() {
         let notes = [];
+        let toNote = (n : number) : string => { return noteStrings[n % 12] + (Math.floor(n/12) + 1); };
 
         let eigthPointer = 0;
         for(let n of this.notes){
+            
             if(n instanceof Rest) {}
             else if(n instanceof Note) {
+                let note : string = toNote(n.note);
                 let start : string = toToneTimeString(eigthPointer);
-                let note : string = noteStrings[n.note % 12] + (Math.floor(n.note/12) + 1);
-                let obj = {time: start, note: note, duration: n.duration};
+                let obj = {time: start, note: note, duration: toneDurationStrings[n.duration]};
                 //console.log(obj);
                 notes.push(obj);
             }
             else if(n instanceof Triplet) {
-                
+                let start = toToneTimeNumber(eigthPointer);
+                let time1 : [number, number, number] = [start[0], start[1], start[2] + ((n.duration * 2)/3)], 
+                    time2 : [number, number, number] = [start[0], start[1], start[2] + ((n.duration * 4)/3)];
+                let duration =  toneDurationStrings[n.note0.duration].charAt(0) + "t";
+                let objs = [
+                    { time: toTimeString(start), note: toNote(n.note0.note), duration: duration },
+                    { time: toTimeString(time1), note: toNote(n.note1.note), duration: duration },
+                    { time: toTimeString(time2), note: toNote(n.note2.note), duration: duration }
+                ];
+                notes.push(objs[0], objs[1], objs[2]);
             }
 
             eigthPointer += n.duration;
@@ -388,7 +432,9 @@ class Triplet extends StaffElement {
     }
 
     toVFNotes() : [sTuple, sNote[]] {
-        let arr = [this.note0.toVFNote(),this.note1.toVFNote(),this.note2.toVFNote()];
+        let arr = [
+            this.note0.toVFNote(), this.note1.toVFNote(), this.note2.toVFNote()
+        ];
         return [new VF.Tuplet(arr), arr];
     }
 }

@@ -23,7 +23,7 @@
             return Math.floor((treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay);
         }
 
-        const chordleNumber = Math.max(daysBetween(new Date("3/24/2022"), new Date()), 0);
+        const chordleNumber = Math.max(daysBetween(new Date("4/1/2022"), new Date()), 0);
     </script>
 
     <div id="overlayBackground" hidden>
@@ -151,7 +151,7 @@
                 <button class="piano-button" id="pbl4"  onclick="game.changeLength(4)"><div>𝅗𝅥</div><keytext>2</keytext></button>
                 <button class="piano-button" id="pbl2"  onclick="game.changeLength(2)"><div>𝅘𝅥</div><keytext>3</keytext></button>
                 <button class="piano-button" id="pbl1"  onclick="game.changeLength(1)"><div>𝅘𝅥𝅮</div><keytext>4</keytext></button>
-                <button class="piano-button" id="pbl0"  onclick="game.changeLength(0)"><div>𝅘𝅥𝅰</div><keytext>5</keytext></button>
+                <button class="piano-button" id="pbtr"  onclick="game.startTuple()"   ><div>3</div><keytext>5</keytext></button>
                 <button class="piano-button" id="pbdot" onclick="game.toggleDot()"    ><div>•</div><keytext>6</keytext></button>
                 <button class="piano-button" id="pbup"  onclick="game.toggleOctave()" ><div>^</div><keytext>7</keytext></button>
                 <button class="piano-button" id="pbr"   onclick="game.pushRest()"     ><div>𝄽</div><keytext>8</keytext></button>
@@ -183,7 +183,6 @@
     <script src="game.js"></script>
     <script>        
         let game = new Game(sequenceFromFile(_daily_sequences, chordleNumber));
-        game.changeLength(2)
 
         let overlayElement = document.getElementById("overlayBackground");
         let endscreenElement = document.getElementById("endscreen");
@@ -191,32 +190,18 @@
         let tutorialElement = document.getElementById("tutorialscreen");
         let settingsElement = document.getElementById("settingsscreen");
 
-        //loading
-        {
-            let ml = window.localStorage.getItem('melodyInstrument');
-            let ch = window.localStorage.getItem('chordInstrument');
-            if(ml != null){
-                melodyInstrument = instruments[ml];
-                document.getElementById("mlsel").selectedIndex = ml;
-            }
-            else {
-                window.localStorage.setItem('melodyInstrument', 0);
-            }
-            if(ch != null){
-                melodyInstrument = instruments[ch];
-                document.getElementById("chsel").selectedIndex = ch;
-            }
-            else {
-                window.localStorage.setItem('chordInstrument', 0);
-            }
-        }
-
         game.Win = function(){
             overlayElement.classList.add("visible");
             $("#overlayBackground").fadeIn(1000);
             overlayElement.removeAttribute("hidden");
             endscreenElement.style.display = "block";
             endscreenText.innerHTML = "VICTORY!";
+            window.localStorage.data.lastPlayed = chordleNumber;
+            window.localStorage.data.streak++;
+            if(window.localStorage.data.streak > window.localStorage.data.longestStreak){
+                window.localStorage.data.longestStreak = window.localStorage.data.streak;
+            }
+            window.localStorage.data.wins[game.currentattempt];
         }
 
         game.Lose = function(){
@@ -225,6 +210,8 @@
             overlayElement.removeAttribute("hidden");
             endscreenElement.style.display = "block";
             endscreenText.innerHTML = "DEFEAT!";
+            window.localStorage.data.lastPlayed = chordleNumber;
+            window.localStorage.data.streak = 0;
         }
 
         drawSVG("basesheet", 0, 0, game.baselineSequence, 450)
@@ -262,14 +249,14 @@
                 case 77: game.pushNote(11); break; //m
                 
                 //numbers
-                case 49: game.changeLength(8); break; //0
-                case 50: game.changeLength(4); break; //1
-                case 51: game.changeLength(2); break; //2
-                case 52: game.changeLength(1); break; //3
-                case 53: game.changeLength(0); break; //4
-                case 54: game.toggleDot(); break;
-                case 55: game.toggleOctave(); break;
-                case 56: game.pushRest(); break;
+                case 49: game.changeLength(8); break; //1
+                case 50: game.changeLength(4); break; //2
+                case 51: game.changeLength(2); break; //3
+                case 52: game.changeLength(1); break; //4
+                case 53: game.startTuple();    break; //5
+                case 54: game.toggleDot();     break; //6
+                case 55: game.toggleOctave();  break; //7
+                case 56: game.pushRest();      break; //8
 
                 case 32: playToneTest(game.baselineSequence); break; //space
             }
@@ -294,6 +281,45 @@
             endscreenElement.style.display = "none"
             settingsElement.style.display = "none";
             tutorialElement.style.display = "none";
+        }
+
+         //loading
+         {
+            let ml = window.localStorage.getItem('melodyInstrument');
+            let ch = window.localStorage.getItem('chordInstrument');
+            if(ml != null){
+                melodyInstrument = instruments[ml];
+                document.getElementById("mlsel").selectedIndex = ml;
+            }
+            else {
+                window.localStorage.setItem('melodyInstrument', 0);
+            }
+            if(ch != null){
+                melodyInstrument = instruments[ch];
+                document.getElementById("chsel").selectedIndex = ch;
+            }
+            else {
+                window.localStorage.setItem('chordInstrument', 0);
+            }
+
+            if(!window.localStorage.getItem('playedBefore')){
+                window.localStorage.setItem('playedBefore', 1);
+                showTutorial();
+                window.localStorage.setItem('data', {
+                    wins: [0, 0, 0, 0, 0, 0],
+                    lastPlayed: 0,
+                    streak: 0,
+                    longestStreak: 0,
+                });
+            }
+            else {
+                if(window.localStorage.data.lastPlayed < chordleNumber - 1) {
+                    streak == 0;
+                }
+                else if (window.localStorage.data.lastPlayed == chordleNumber){
+                    game.playing = false;
+                }
+            }
         }
     </script>
 </body>

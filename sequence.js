@@ -57,10 +57,17 @@ var toneDurationStrings = {
     8: "1n"
 };
 function toToneTimeString(time) {
+    var _a = toToneTimeNumber(time), measure = _a[0], quarter = _a[1], eighth = _a[2];
+    return measure + ":" + quarter + ":" + eighth;
+}
+function toTimeString(timestruct) {
+    return timestruct[0] + ":" + timestruct[1] + ":" + timestruct[2];
+}
+function toToneTimeNumber(time) {
     var measure = Math.floor(time / 8);
     var quarter = Math.floor((time % 8) / 2);
     var eighth = (time % 2) * 2;
-    return measure + ":" + quarter + ":" + eighth;
+    return [measure, quarter, eighth];
 }
 var ChordType = /** @class */ (function () {
     function ChordType(suffixstring, notestring) {
@@ -170,27 +177,43 @@ function sequenceFromString(seqString) {
                 }
                 break;
             case "melody":
-                processMelody(tokens.splice(1), seq);
+                processMelody(line.substring(tokens[0].length + 1), seq);
                 break;
         }
     }
     return seq;
 }
-function processMelody(tokens, seq) {
+function processMelody(source, seq) {
+    var splitreg = / (?![^\[]*\])/;
+    var tokens = source.split(splitreg, -1);
+    console.log(tokens);
     for (var index = 0; index < tokens.length; index++) {
         var notestr = tokens[index];
         var duration = 1;
-        while (tokens[index + 1] === '#') {
-            duration++;
-            index++;
-        }
-        if (notestr === '-') {
-            seq.pushRest(duration);
+        if (notestr.charAt(0) === '3') {
+            var clean = notestr.substring(notestr.indexOf('[') + 1, notestr.indexOf(']'));
+            var trtokens = clean.split(" ");
+            var notes = [];
+            for (var i = 0; i < 3; i++) {
+                var _a = extractNote(trtokens[i]), notenum = _a[0], charoffset = _a[1];
+                var octave = +trtokens[i].substring(charoffset);
+                notes.push(notenum + (octave * 12));
+            }
+            seq.pushTuple(notes[0], notes[1], notes[2], duration);
         }
         else {
-            var _a = extractNote(notestr), notenum = _a[0], charoffset = _a[1];
-            var octave = +notestr.substring(charoffset);
-            seq.pushNote(notenum + (octave * 12), duration);
+            while (tokens[index + 1] === '#') {
+                duration++;
+                index++;
+            }
+            if (notestr === '-') {
+                seq.pushRest(duration);
+            }
+            else {
+                var _b = extractNote(notestr), notenum = _b[0], charoffset = _b[1];
+                var octave = +notestr.substring(charoffset);
+                seq.pushNote(notenum + (octave * 12), duration);
+            }
         }
     }
 }
@@ -225,7 +248,7 @@ var sequence = /** @class */ (function () {
     0: grey
     1: green
     2: light yellow
-    3: dark yellow
+    3: orange
     */
     //returns an array of integers analagous to the object being enacted upon, win
     sequence.prototype.compare = function (comparor) {
@@ -273,6 +296,8 @@ var sequence = /** @class */ (function () {
                     if (element.duration != note.duration) {
                         arr.push(0, 0, 0);
                     }
+                    var isgreen = function (n0, n1) { return n0 == n1 ? 1 : 2; };
+                    arr.push(isgreen(element.note0.note, note.note0.note), isgreen(element.note1.note, note.note1.note), isgreen(element.note2.note, note.note2.note));
                 }
             }
             else {
@@ -301,18 +326,28 @@ var sequence = /** @class */ (function () {
     };
     sequence.prototype.toToneArray = function () {
         var notes = [];
+        var toNote = function (n) { return noteStrings[n % 12] + (Math.floor(n / 12) + 1); };
         var eigthPointer = 0;
         for (var _i = 0, _a = this.notes; _i < _a.length; _i++) {
             var n = _a[_i];
             if (n instanceof Rest) { }
             else if (n instanceof Note) {
+                var note = toNote(n.note);
                 var start = toToneTimeString(eigthPointer);
-                var note = noteStrings[n.note % 12] + (Math.floor(n.note / 12) + 1);
-                var obj = { time: start, note: note, duration: n.duration };
+                var obj = { time: start, note: note, duration: toneDurationStrings[n.duration] };
                 //console.log(obj);
                 notes.push(obj);
             }
             else if (n instanceof Triplet) {
+                var start = toToneTimeNumber(eigthPointer);
+                var time1 = [start[0], start[1], start[2] + ((n.duration * 2) / 3)], time2 = [start[0], start[1], start[2] + ((n.duration * 4) / 3)];
+                var duration = toneDurationStrings[n.note0.duration].charAt(0) + "t";
+                var objs = [
+                    { time: toTimeString(start), note: toNote(n.note0.note), duration: duration },
+                    { time: toTimeString(time1), note: toNote(n.note1.note), duration: duration },
+                    { time: toTimeString(time2), note: toNote(n.note2.note), duration: duration }
+                ];
+                notes.push(objs[0], objs[1], objs[2]);
             }
             eigthPointer += n.duration;
         }
@@ -362,7 +397,9 @@ var Triplet = /** @class */ (function (_super) {
         return _this;
     }
     Triplet.prototype.toVFNotes = function () {
-        var arr = [this.note0.toVFNote(), this.note1.toVFNote(), this.note2.toVFNote()];
+        var arr = [
+            this.note0.toVFNote(), this.note1.toVFNote(), this.note2.toVFNote()
+        ];
         return [new VF.Tuplet(arr), arr];
     };
     return Triplet;
