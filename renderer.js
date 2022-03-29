@@ -41,7 +41,18 @@ class vexflowBeamGroup {
 
     getAllBeams() {
         let filtered = this.groups.filter(g => g.length > 1);
+        filtered.forEach(group => {
+            let dir = 0;
+            for(var note of group){
+                dir += note.getStemDirection();
+            }
+            dir = dir > 0 ? 1 : -1;
+            for(var note of group){
+                note.setStemDirection(dir);
+            }
+        })
         let beams = filtered.map(g => new VF.Beam(g));
+        console.log(filtered);
         return beams;
     }
 }

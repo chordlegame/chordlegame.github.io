@@ -24,4 +24,4 @@ Swing 1
 Tempo 180
 TimeSignature 4 4
 Chords 8 Bo/7 Bb7 Eb7
-Melody Eb5 `;
+Melody Eb4 F#4 A4 C5 D5 Eb5 D5 C5 Bb4 G4 A4 Bb4 - Bb4 A4 Bb4 G4 # # F4 - # # #`;
