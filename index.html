@@ -12,6 +12,7 @@
     <script src="https://unpkg.com/vexflow@3.0.9/releases/vexflow-min.js"></script>
     <script src="res/libs/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/tone"></script>
+    <script src="res/scripts/sequences.js"></script>
     <script>
         function treatAsUTC(date) {
             var result = new Date(date);
@@ -24,7 +25,7 @@
             return Math.floor((treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay);
         }
 
-        const chordleNumber = 0; //Math.max(daysBetween(new Date("4/3/2022"), new Date()), 0);
+        const chordleNumber = Math.max(daysBetween(new Date("5/25/2022"), new Date()), 0) % ;
     </script>
 
     <div id="overlayBackground" hidden>
@@ -35,14 +36,19 @@
         </button>
         <div id="endscreen" class="endingScreen" style="display:none;">
             <h2 id="endscreenText" style="padding-top: 2rem;"></h2>
-            <p id="chordleNum" style="padding-top: 2rem;">CHORDLE</p>
+            <p id="chordleNum" style="padding-top: 2rem;">CHORDLE #</p>
             <div id="basesheet" class="staff"></div>
+            <p id="credit" style="padding-top: 2rem;">Credit: </p>
+            <p style="border-bottom: 1px solid #3a3a3c;">
+            <br>
+            <br>
             <div id="endNextDisplay">
-                <p>NEXT CHORDLE</p>
+                <p style="margin-top: 10px;">NEXT CHORDLE</p>
                 <h2 id="clock"></h2>
 
                 <script>
-                    document.getElementById("chordleNum").innerHTML = "CHORDLE " + chordleNumber;
+                    document.getElementById("chordleNum").innerHTML = "CHORDLE #" + chordleNumber;
+                    document.getElementById("credit").innerHTML = "Credit: " + _daily_sequences.split(";")[chordleNumber].split("\n").find(element => element.includes("Creator: ")).substring(8);
 
                     function getCountDownString(){
                         const date = new Date();
@@ -177,7 +183,6 @@
         var exports = {};
         function require(a){return null;}
     </script>
-    <script src="res/scripts/sequences.js"></script>
     <script src="res/scripts/sequence.js"></script>
     <script src="res/scripts/sequencePlayerNew.js"></script>
     <script src="res/scripts/renderer.js"></script>

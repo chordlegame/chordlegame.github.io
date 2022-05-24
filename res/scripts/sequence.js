@@ -110,17 +110,21 @@ function extractNote(input) {
 var Chord = /** @class */ (function () {
     function Chord(inputstr, duration) {
         var _this = this;
+        this.isvalid = false;
         this.name = inputstr;
         this.duration = duration;
         var _a = extractNote(inputstr), root = _a[0], charoffset = _a[1];
         //console.log(charoffset);
         root += 12 * 2;
+        if (isNaN(root))
+            return;
         //console.log(root);
         chordTypes.forEach(function (e) {
             e.suffixes.forEach(function (suffix) {
                 if (inputstr.substring(charoffset) === suffix) {
                     _this.notes = e.notes.map(function (e) { return new Note(e + root, duration); });
                     _this.notes.forEach(function (n) { return console.log(n); });
+                    _this.isvalid = true;
                     return;
                 }
             });
@@ -216,6 +220,30 @@ function processMelody(source, seq) {
             }
         }
     }
+}
+function stringFromMelody(sequence) {
+    var string = '';
+    var noteToString = function (n) { return noteStrings[n.note % 12] + (Math.floor(n.note / 12)); };
+    for (var _i = 0, _a = sequence.notes; _i < _a.length; _i++) {
+        var n = _a[_i];
+        if (n instanceof Rest) {
+            string += '- ';
+        }
+        else if (n instanceof Note) {
+            string += noteToString(n) + ' ';
+        }
+        else if (n instanceof Triplet) {
+            string += '3[' +
+                noteToString(n.note0) + ' ' +
+                noteToString(n.note1) + ' ' +
+                noteToString(n.note2) + ' ' +
+                '] ';
+        }
+        for (var i = 1; i < n.duration; i++) {
+            string += '# ';
+        }
+    }
+    return string;
 }
 var sequence = /** @class */ (function () {
     function sequence(measures, beatsPerMeasure) {

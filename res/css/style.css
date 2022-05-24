@@ -11,6 +11,16 @@ h2 {
     margin:0;
 }
 
+h3 {
+    font-size: 1.65rem;
+}
+
+pre {
+    font-size: 1rem;
+    padding: 0;
+    margin: 0;
+}
+
 body {
     background-color: #121213;
     color: #fff;
@@ -133,6 +143,35 @@ form{
     margin-top: 10px;
     margin-bottom: 0px;
     font-size: 1.4rem;
+}
+
+.chordSymbolInput {
+    margin-left: 10px;
+    margin-right: 0px;
+    background-color: #121213;
+    color:#fff;
+    width: 60px;
+    font-size: 1.4rem;
+}
+
+.chordSymbolInput.error {
+    color:#dd2211;
+}
+
+.smallSuggestButton {
+    color:#fff;
+    background-color: #000;
+    font-size: 1.5rem;
+    width: 25px;
+    outline: solid 2px #999;
+    border-radius: 4px;
+    float: right;
+    margin: 2px 4px;
+}
+
+.smallSuggestButton:active{
+    color:#fff;
+    background-color: #3a3a3c;
 }
 
 .chordSymbol {

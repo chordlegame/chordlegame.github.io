@@ -110,8 +110,10 @@ class Chord{
     duration: number;
     notes : Note[]
     name;
+    isvalid : boolean;
 
     constructor(inputstr : string, duration : number){
+        this.isvalid = false;
         this.name = inputstr;
         this.duration = duration;
 
@@ -120,6 +122,7 @@ class Chord{
         //console.log(charoffset);
 
         root += 12 * 2;
+        if (isNaN(root)) return;
 
         //console.log(root);
         
@@ -128,6 +131,7 @@ class Chord{
                 if(inputstr.substring(charoffset) === suffix){
                     this.notes = e.notes.map(e => new Note(e + root, duration));
                     this.notes.forEach(n => console.log(n));
+                    this.isvalid = true;
                     return;
                 }
             });
@@ -223,6 +227,34 @@ function processMelody(source : string, seq : sequence) {
             }
         }
     }
+}
+
+function stringFromMelody(sequence : sequence){
+    let string = '';
+
+    let noteToString = (n : Note) : string => { return noteStrings[n.note % 12] + (Math.floor(n.note/12)); };
+
+    for(let n of sequence.notes){
+        if(n instanceof Rest){
+            string += '- '
+        }
+        else if (n instanceof Note){
+            string += noteToString(n) + ' ';
+        }
+        else if (n instanceof Triplet){
+            string += '3[' + 
+                noteToString(n.note0) + ' ' + 
+                noteToString(n.note1) + ' ' +
+                noteToString(n.note2) + ' ' + 
+            '] ';
+        }
+
+        for(let i = 1; i < n.duration; i++){
+            string += '# '
+        }
+    }
+
+    return string;
 }
 
 export class sequence{

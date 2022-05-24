@@ -9,5 +9,366 @@
     <link rel="stylesheet" href="res/css/style.css">
 </head>
 <body>
-    
+    <script src="https://unpkg.com/vexflow@3.0.9/releases/vexflow-min.js"></script>
+    <script src="res/libs/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/tone"></script>
+    <script>
+        var exports = {};
+        function require(a){return null;}
+    </script>
+    <script src="res/scripts/sequences.js"></script>
+    <script src="res/scripts/sequence.js"></script>
+    <script src="res/scripts/sequencePlayerNew.js"></script>
+    <script src="res/scripts/renderer.js"></script>
+    <script src="res/scripts/game.js"></script>
+
+    <div id="overlayBackground" hidden>
+        <button id="close-button" class="icon" aria-label="close" style="background-color: #121213; float:left;" onclick="hideBg()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 24 24" width="40">
+                <path fill="#fff" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+            </svg>
+        </button>
+        <div id="submitscreen" class="endingScreen">
+            <form method="post" action="https://docs.google.com/forms/d/e/1FAIpQLSe6BRkpkjrqwwhkpyTgMhuwcjRKLRsClWqEvNHVDaSV8NP7tw/formResponse">
+                <label>Name</label>
+                <input type="text" name="entry.40663366" placeholder="Credit Name"/>
+        
+                <input type="hidden" name="entry.689868233" value="" id="stringInput"/>
+              
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="header">
+        <h1>
+            <button id="help-button" class="icon" aria-label="help" style="background-color: #121213; float:left;" onclick="showTutorial()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 24 24" width="40">
+                    <path fill="#fff" d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
+                </svg>
+            </button>
+            CHORDLE
+            <button id="settings-button" class="icon" aria-label="settings" style="background-color: #121213; float:right;" onclick="showSettings()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 24 24" width="40">
+                    <path fill="#fff" d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"></path>
+                </svg>
+            </button>
+        </h1>
+    </div>
+
+    <br>
+    <h2 style="margin:auto; text-align: center;">
+        Suggesting
+    </h2>
+
+    <br>
+    <div id="chords">
+        <input type="text" class="chordSymbolInput" onchange="suggest.checkChord(0)"></input>
+        <input type="text" class="chordSymbolInput" onchange="suggest.checkChord(1)"></input>
+        <span id="endcap"></span>
+    </div>
+    <div id="sheet" class="staff"></div>
+    <br>
+    <div style="float:left; width: 49%;">
+        <h3 style="display:inline; margin-left: 10px;">Tempo: </h3>
+        <input type="text" id="tempo" style="width:45px; font-size:1.65rem; text-align: right; border:none;" value="96" maxlength="3" minlength="1" class="chordSymbolInput" onchange="suggest.tempo = document.getElementById('tempo').value"></input>
+        <button class="smallSuggestButton" onclick="suggest.tempo += 4; document.getElementById('tempo').value = suggest.tempo; console.log(suggest.tempo)">+</button>
+        <button class="smallSuggestButton" onclick="suggest.tempo -= 4; document.getElementById('tempo').value = suggest.tempo; console.log(suggest.tempo)">-</button>
+    </div>
+    <div style="float:right; width: 46%; margin-right: 10px;">
+        <h3 style="display:inline;">Measures: </h3>    
+        <button class="smallSuggestButton" onclick="suggest.measureUp()">+</button>
+        <button class="smallSuggestButton" onclick="suggest.measureDown()">-</button>
+    </div>
+    <div style="margin: 10px; padding-top:40px;">
+        <h3 style="display:inline;">Swing: </h3>
+        <input 
+            type="checkbox" id="swingbox"
+            style="float:right; width:1.65rem; height:1.65rem;"
+            onchange="suggest.sequence.swing = document.getElementById('swingbox').checked;"
+        >
+    </div>
+    <br>
+
+    <!--p>
+        <h3>Chord Symbol Help</h3>
+        <ul>
+            <li><pre>5:          power chord</pre></li>
+            <li><pre>- / m:      minor chords</pre></li>
+            <li><pre>+:          augmented chord</pre></li>
+            <li><pre>o / dim:    diminished chords</pre></li>
+            <li><pre>maj / M:    major chords</pre></li>
+            <li><pre>6:          6 chords</pre></li>
+            <li><pre>9:          9 chords</pre></li>
+            <li><pre>6/9:        6 9 chords</pre></li>
+        </ul>
+    </p !-->
+
+    <div id="piano-keyboard" style="position:fixed; bottom:5px; width:500px;">
+        <div class="piano-buttons" style="display: block; justify-content: center;">
+            <div id="upperButtons" style="margin-left: 5.65%; margin-right: -5.65%; margin-bottom: -14px;">
+                <button class="piano-button-above" onclick="suggest.playSequence(false)"><div>▶</div><keytext>⍽</keytext></button>
+                <button class="piano-button-above" onclick="suggest.playSequence(true)"><div>c</div></button>
+                
+                <button class="piano-button-above" style="visibility: hidden;"></button>
+                <button class="piano-button-above" style="visibility: hidden;"></button>
+                <button class="piano-button-above" style="visibility: hidden;"></button>
+
+                <button class="piano-button-above" id="pbd" onclick="suggest.deleteNote();">␡</button>
+                <button class="piano-button-above" id="pbe" onclick="suggest.submit()">⏎</button>
+            </div>
+            <div style="margin-bottom:20px;">
+                <button class="piano-button" id="pbl8"  onclick="suggest.changeLength(8)"><div>𝅝</div><keytext>1</keytext></button>
+                <button class="piano-button" id="pbl4"  onclick="suggest.changeLength(4)"><div>𝅗𝅥</div><keytext>2</keytext></button>
+                <button class="piano-button" id="pbl2"  onclick="suggest.changeLength(2)"><div>𝅘𝅥</div><keytext>3</keytext></button>
+                <button class="piano-button" id="pbl1"  onclick="suggest.changeLength(1)"><div>𝅘𝅥𝅮</div><keytext>4</keytext></button>
+                <button class="piano-button" id="pbtr"  onclick="suggest.startTuple()"   ><div>3</div><keytext>5</keytext></button>
+                <button class="piano-button" id="pbdot" onclick="suggest.toggleDot()"    ><div>•</div><keytext>6</keytext></button>
+                <button class="piano-button" id="pbup"  onclick="suggest.toggleOctave()" ><div>^</div><keytext>7</keytext></button>
+                <button class="piano-button" id="pbr"   onclick="suggest.pushRest()"     ><div>𝄽</div><keytext>8</keytext></button>
+            </div>
+        </div>
+        <div class="keys">
+            <div class="key"        onclick="suggest.pushNote( 0)"><keytext>z</keytext></div>
+            <div class="key black"  onclick="suggest.pushNote( 1)"><bkeytxt>s</bkeytxt></div>
+            <div class="key"        onclick="suggest.pushNote( 2)"><keytext>x</keytext></div>
+            <div class="key black"  onclick="suggest.pushNote( 3)"><bkeytxt>d</bkeytxt></div>
+            <div class="key"        onclick="suggest.pushNote( 4)"><keytext>c</keytext></div>
+            <div class="key"        onclick="suggest.pushNote( 5)"><keytext>v</keytext></div>
+            <div class="key black"  onclick="suggest.pushNote( 6)"><bkeytxt>g</bkeytxt></div>
+            <div class="key"        onclick="suggest.pushNote( 7)"><keytext>b</keytext></div>
+            <div class="key black"  onclick="suggest.pushNote( 8)"><bkeytxt>h</bkeytxt></div>
+            <div class="key"        onclick="suggest.pushNote( 9)"><keytext>n</keytext></div>
+            <div class="key black"  onclick="suggest.pushNote(10)"><bkeytxt>j</bkeytxt></div>
+            <div class="key"        onclick="suggest.pushNote(11)"><keytext>m</keytext></div>
+        </div>
+    </div>
+
+    <script>
+        class suggesting {
+            constructor(measures){
+                this.inputLength = 2;
+                this.currentLength = 0;
+                this.dotted = false;
+                this.playing = true;
+                this.currentTuple = null;
+                this.tempo = 96;
+
+                this.octave = false;
+
+                this.chords = [null, null];
+
+                this.sequence = new sequence(measures, 4);
+
+                this.chordHolderHTML = document.getElementById("chords");
+
+                drawSVG("sheet", measures, 2, this.sequence);
+            }
+
+            measureUp(){
+                if(this.sequence.measures >= 4) return;
+
+                let r = document.createElement("input"); 
+                let end = document.getElementById("endcap");
+                r.type = "text";
+                r.classList.add("chordSymbolInput");
+                r.setAttribute("onchange", "suggest.checkChord(" + (this.chordHolderHTML.childElementCount - 1) + ")");
+                this.chordHolderHTML.insertBefore(r, end);
+                
+                this.sequence.measures++;
+                this.chords.push(null);
+
+                drawSVG("sheet", 0, 0, this.sequence);
+            }
+
+            measureDown(){
+                this.chords.pop();
+                if(this.sequence.measures < 2) return;
+                this.chordHolderHTML.removeChild(this.chordHolderHTML.children[this.chordHolderHTML.childElementCount - 2]);
+                this.sequence.measures--;
+                drawSVG("sheet", 0, 0, this.sequence);
+            }
+
+            checkChord(indexOfChord){
+                let c = new Chord(this.chordHolderHTML.children[indexOfChord].value, 8);
+
+                if(!c.isvalid) {
+                    this.chordHolderHTML.children[indexOfChord].classList.add("error");
+                    this.chords[indexOfChord] = null;
+                }
+                else {
+                    this.chordHolderHTML.children[indexOfChord].classList.remove("error");
+                    this.chords[indexOfChord] = c;
+                }
+            }
+
+            playSequence(onlychords){
+                audioContextStarted = false;
+                this.sequence.tempo = this.tempo;
+                this.sequence.chords = this.chords;
+
+                playToneTest(this.sequence, onlychords);
+            }
+
+            submit() {
+                console.log('w imo')
+                let overlayElement = document.getElementById('overlayBackground');
+                overlayElement.classList.add("visible");
+                $("#overlayBackground").slideDown(10);
+                overlayElement.removeAttribute("hidden");
+
+                let e = document.getElementById("stringInput");
+                let submitstring = "";
+                
+                submitstring += "Swing " + this.sequence.swing + "\n";
+                submitstring += "Tempo " + this.tempo + "\n";
+                submitstring += "TimeSignature " + "4 4"+ "\n";
+                submitstring += "Chords 8 " + this.chords.map(a => a.name).join(' ')+ "\n";
+                submitstring += "Melody " + stringFromMelody(this.sequence)+ "\n";
+
+                e.value = submitstring;
+            }
+
+            changeLength(newlength){
+                document.getElementById("pbl" + this.inputLength.toString()).classList.remove('piano-button-pressed')
+
+                this.inputLength = newlength;
+
+                document.getElementById("pbl" + this.inputLength.toString()).classList.add('piano-button-pressed');
+            }
+
+            toggleOctave(){
+                this.octave = !this.octave;
+                if(this.octave) document.getElementById("pbup").classList.add('piano-button-pressed')
+                else document.getElementById("pbup").classList.remove('piano-button-pressed')
+            }
+
+            toggleDot(){
+                this.dotted = !this.dotted
+                if(this.dotted) document.getElementById("pbdot").classList.add('piano-button-pressed')
+                else document.getElementById("pbdot").classList.remove('piano-button-pressed')
+            }
+
+            startTuple(){
+                if(this.currentTuple != null){
+                    this.currentTuple = null;
+                    document.getElementById("pbtr").classList.remove('piano-button-pressed')
+                }
+                else {
+                    this.currentTuple = [];
+                    document.getElementById("pbtr").classList.add('piano-button-pressed')
+                }
+            }
+
+            pushToTuple(i){
+                this.currentTuple.push(i);
+                if(this.currentTuple.length == 3) {
+                    this.sequence.pushTuple(
+                        this.currentTuple[0],this.currentTuple[1],this.currentTuple[2], 
+                        this.inputLength + (this.dotted ? this.inputLength/2 : 0)
+                    );
+                    this.currentTuple = null;
+                    document.getElementById("pbtr").classList.remove('piano-button-pressed')
+                    drawSVG("sheet", 0, 0, this.sequence);
+                }
+            }
+
+            pushNote(note){
+                if(!this.playing) return;
+                if(this.currentTuple != null) {
+                    this.pushToTuple(note + (this.octave ? 5*12 : 4*12));
+                    return;
+                }
+                let duration = this.inputLength + (this.dotted ? this.inputLength/2 : 0);
+
+                if((duration + this.currentLength) > (this.sequence.measures * this.sequence.beatsPerMeasure * 2)) {
+                    return;
+                }
+
+                this.sequence.pushNote(note + (this.octave ? 5*12 : 4*12), duration);
+
+                this.currentLength += duration;
+
+                drawSVG("sheet", 0, 0, this.sequence);
+            }
+
+            pushRest(){
+                if(!this.playing) return;
+                let duration = this.inputLength + (this.dotted ? this.inputLength/2 : 0);
+
+                if((duration + this.currentLength) > (this.sequence.measures * this.sequence.beatsPerMeasure * 2)) {
+                    return;
+                }
+
+                this.sequence.pushRest(duration);
+
+                this.currentLength += duration;
+
+                drawSVG("sheet", 0, 0, this.sequence);
+            }
+
+            deleteNote(){
+                if(!this.playing) return;
+
+                if(this.currentTuple != null){
+                    this.currentTuple = null;
+                    document.getElementById("pbtr").classList.remove('piano-button-pressed')
+                    return;
+                }
+
+                this.currentLength -= this.sequence.deleteLast();
+
+                drawSVG("sheet", 0, 0, this.sequence);
+            }
+        }
+        suggest = new suggesting(2);
+
+        window.onkeydown = function(event) {
+
+            if (document.activeElement.type == "text"){
+                return;
+            }
+            else
+            switch(event.keyCode){
+                case 8:
+                    suggest.deleteNote(); 
+                    break;
+                case 13: 
+                    suggest.submit(); 
+                    break;
+                //piano keys
+                case 90: suggest.pushNote( 0); break; //z
+                case 83: suggest.pushNote( 1); break; //s
+                case 88: suggest.pushNote( 2); break; //x
+                case 68: suggest.pushNote( 3); break; //d 
+                case 67: suggest.pushNote( 4); break; //c
+                case 86: suggest.pushNote( 5); break; //v
+                case 71: suggest.pushNote( 6); break; //g
+                case 66: suggest.pushNote( 7); break; //b
+                case 72: suggest.pushNote( 8); break; //h
+                case 78: suggest.pushNote( 9); break; //n
+                case 74: suggest.pushNote(10); break; //j
+                case 77: suggest.pushNote(11); break; //m
+                
+                //numbers
+                case 49: suggest.changeLength(8); break; //1
+                case 50: suggest.changeLength(4); break; //2
+                case 51: suggest.changeLength(2); break; //3
+                case 52: suggest.changeLength(1); break; //4
+                case 53: suggest.startTuple();    break; //5
+                case 54: suggest.toggleDot();     break; //6
+                case 55: suggest.toggleOctave();  break; //7
+                case 56: suggest.pushRest();      break; //8
+
+                case 187: suggest.measureUp();      break; //7
+                case 189: suggest.measureDown();    break; //8
+
+                case 32: suggest.playSequence(false); break; //space
+            }
+        }
+
+        function showTutorial(){
+            
+        }
+    </script>
 </body>
