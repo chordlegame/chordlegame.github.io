@@ -144,7 +144,7 @@ function sequenceFromFile(sequences, index) {
     if (index === void 0) { index = 0; }
     var inputstrings = sequences.split(";");
     //console.log(inputstrings[0])
-    var seq = sequenceFromString(inputstrings[index]);
+    var seq = sequenceFromString(inputstrings[index % inputstrings.length]);
     return seq;
 }
 function sequenceFromString(seqString) {
@@ -271,6 +271,14 @@ var sequence = /** @class */ (function () {
         //console.log(chord + "," + duration)
         this.chords.push(new Chord(chord, duration));
     };
+    sequence.prototype.getLength = function () {
+        var l = 0
+        this.notes.forEach(element => {
+            l += element.duration 
+        });
+        return l
+    }
+
     /*
     colors:
     0: grey
@@ -368,7 +376,9 @@ var sequence = /** @class */ (function () {
             }
             else if (n instanceof Triplet) {
                 var start = toToneTimeNumber(eigthPointer);
-                var time1 = [start[0], start[1], start[2] + ((n.duration * 2) / 3)], time2 = [start[0], start[1], start[2] + ((n.duration * 4) / 3)];
+                var offset1 = this.swing ? n.duration / 2 : ((n.duration * 2) / 3)
+                var offset2 = this.swing ? n.duration / 1 : ((n.duration * 4) / 3)
+                var time1 = [start[0], start[1], start[2] + offset1], time2 = [start[0], start[1], start[2] + offset2];
                 var duration = toneDurationStrings[n.note0.duration].charAt(0) + "t";
                 var objs = [
                     { time: toTimeString(start), note: toNote(n.note0.note), duration: duration },

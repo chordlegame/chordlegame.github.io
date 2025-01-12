@@ -78,6 +78,18 @@ class Game {
 
     advanceSequence() {
         if(this.currentattempt >= 0){
+            let lenAttempt = this.rows[this.currentattempt].sequence.getLength()
+            let lenfull = this.baselineSequence.getLength()
+
+            while (lenAttempt < lenfull){
+                let delta = lenfull - lenAttempt
+                let len = (delta % 8) == 0 ? 8 : (delta % 4) == 0 ? 4 : (delta % 2) == 0 ? 2 : 1
+                console.log(len)
+                this.rows[this.currentattempt].sequence.pushRest(len)
+                lenAttempt = this.rows[this.currentattempt].sequence.getLength()
+            }
+            console.log(lenAttempt)
+
             let [matches, win] = this.rows[this.currentattempt].sequence.compare(this.baselineSequence);
             this.rows[this.currentattempt].matches = matches;
 

@@ -17,6 +17,7 @@
         function treatAsUTC(date) {
             var result = new Date(date);
             result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+            console.log(result)
             return result;
         }
 
@@ -25,7 +26,7 @@
             return Math.floor((treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay);
         }
 
-        const chordleNumber = Math.max(daysBetween(new Date("5/25/2022"), new Date()), 0);
+        const chordleNumber = Math.max(daysBetween(new Date("11/11/2024"), new Date()), 0);
     </script>
 
     <div id="overlayBackground" hidden>
@@ -188,7 +189,7 @@
     <script src="res/scripts/sequencePlayerNew.js"></script>
     <script src="res/scripts/renderer.js"></script>
     <script src="res/scripts/game.js"></script>
-    <script>        
+    <script>
         let game = new Game(sequenceFromFile(_daily_sequences, chordleNumber), false);
 
         let overlayElement = document.getElementById("overlayBackground");
